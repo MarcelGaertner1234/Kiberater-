@@ -6,19 +6,45 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 MVP für KI-Beratung: Assessment → Roadmap → Projekte → Beratung
 
 ## 🛠 Tech Stack
-- **Frontend**: Next.js 14, TypeScript, Tailwind CSS, Radix UI
-- **Backend**: Express, PostgreSQL, Prisma
-- **Auth**: NextAuth.js (OAuth + Email)
+- **Frontend**: Next.js 14 (App Router), TypeScript, Tailwind CSS, Radix UI
+- **Backend**: Express.js, PostgreSQL, Prisma ORM
+- **Auth**: NextAuth.js (JWT + OAuth providers)
+- **State**: Zustand (global), react-hook-form + Zod (forms)
 - **i18n**: next-i18next (de/en)
+- **Monorepo**: Turborepo with npm workspaces
+- **Infrastructure**: Docker, Redis, Bull queue, AWS S3
+- **Quality**: Jest, ESLint, Prettier, Husky hooks
+- **Requirements**: Node.js >= 18.0.0, npm >= 9.0.0
 
 ## 📋 Commands (Copy & Paste)
 ```bash
-npm install              # Setup
-npm run dev              # Start development
-npm run db:migrate       # Database migrations
-npm run test             # Run tests
-npm run lint             # Check code
+# Development
+npm run setup            # Complete setup (install + migrate + seed)
+npm run dev              # Start both frontend and backend
+npm run dev:frontend     # Frontend only (port 3000)
+npm run dev:backend      # Backend only (port 4000)
+
+# Testing
+npm run test             # Run all tests with coverage
+npm run test:watch       # Run tests in watch mode
+npm run test:staged      # Test only changed files
+
+# Code Quality
+npm run lint             # ESLint check
+npm run format           # Prettier formatting
+npm run typecheck        # TypeScript type checking
+
+# Database
+npm run db:migrate       # Run database migrations
+npm run db:seed          # Seed database with test data
+
+# Build & Clean
 npm run build            # Production build
+npm run clean            # Clean all build artifacts
+
+# Quality Checks (run automatically on pre-commit)
+npm run check:duplicates # Check for code duplication
+npm run check:docs       # Verify docs are updated
 ```
 
 ## ⚠️ KRITISCHE ENTWICKLUNGSPRINZIPIEN
@@ -169,6 +195,12 @@ NACH Context-Clear:
 - IMMER docs/CURRENT_TASK.md lesen
 - TODOs im Code suchen: grep -r "TODO: \[AGENT-"
 
+Task-Markierungen im Code:
+- TODO: [AGENT-XXX] - Offene Aufgaben
+- FIXME: [AGENT-XXX] - Kritische Fixes
+- NOTE: [AGENT-XXX] - Wichtige Hinweise
+- BLOCKED: [AGENT-XXX] - Blockierte Tasks
+
 Bei Blockern:
 - Als BLOCKED: [AGENT-XXX] im Code markieren
 - In .agent-state.json unter blocking_issues
@@ -248,6 +280,84 @@ const styles = useNotionStyles()
 - useTheme() für Theme-Zugriff
 - Automatic Dark/Light Mode
 
+## 🏛️ High-Level Architecture
+
+### Monorepo Structure
+```
+/
+├── frontend/               # Next.js 14 App Router
+│   ├── app/               # Pages & Routing
+│   ├── components/        # Notion-style UI components
+│   ├── lib/              # Core utilities & hooks
+│   └── hooks/            # Custom React hooks
+├── backend/               # Express.js API
+│   ├── routes/           # API endpoints (v1 versioned)
+│   ├── services/         # Business logic
+│   ├── utils/            # Shared utilities
+│   └── middleware/       # Auth, rate limiting, etc.
+├── prisma/               # Database schema & migrations
+├── docs/                 # Architecture documentation
+└── .agent-state.json     # Multi-agent task tracking
+```
+
+### API Architecture Pattern
+- RESTful API with `/api/v1/` prefix
+- Consistent error handling via `ApiError` class
+- JWT authentication with refresh tokens
+- Request validation using Zod schemas
+- Database transactions via `withTransaction` utility
+
+### State Management
+- **Frontend**: Zustand stores for global state
+- **Auth**: NextAuth.js with JWT strategy
+- **Forms**: react-hook-form + Zod validation
+- **API**: Custom `useApi` and `useApiMutation` hooks
+
+### Database Architecture
+- PostgreSQL with Prisma ORM
+- Role-based access (user, advisor, admin)
+- Soft deletes on critical data
+- Audit logging for compliance
+- Optimistic locking via version fields
+
+### Testing Strategy
+- Jest with separate configs for frontend/backend
+- Coverage requirements: 80% lines, 70% branches
+- Test utilities in `/test-utils`
+- Mocked Prisma client for unit tests
+
+### Security & Performance
+- Rate limiting per endpoint
+- Redis caching with TTL
+- Job queue (Bull) for async tasks
+- File uploads to S3
+- Sentry error tracking
+- Content Security Policy
+
+## 🚀 CI/CD & Quality Gates
+
+### GitHub Actions Pipeline
+- **Test Coverage**: 80% lines, 70% branches required
+- **Security**: Trufflehog scanning for secrets
+- **Bundle Size**: Monitoring with size limits
+- **Deployment**: Vercel (frontend) + AWS (backend)
+
+### Pre-commit Hooks (Husky)
+```bash
+# Runs automatically before each commit:
+- ESLint (must pass)
+- Prettier (auto-formats)
+- TypeScript check (must pass)
+- Test staged files
+- Check for duplicate functions
+- Verify documentation updates
+```
+
+### Code Style
+- **Prettier**: No semicolons, single quotes, 100 char width
+- **ESLint**: Strict mode with curly braces requirement
+- **TypeScript**: Strict mode enabled
+
 ## ❓ Feature-Entwicklung: FRAGEN CHECKLISTE
 
 ### Bei Login/Register:
@@ -291,3 +401,29 @@ const styles = useNotionStyles()
 □ Analytics/Tracking gewünscht?
 □ Notifications bei Aktionen?
 ```
+
+## 🔧 Environment & Services
+
+### Required Services
+- **PostgreSQL**: Main database
+- **Redis**: Caching & Bull queue
+- **S3**: File uploads (AWS_S3_* env vars)
+
+### Optional Integrations
+- **Sentry**: Error tracking (SENTRY_DSN)
+- **OpenAI**: AI features (OPENAI_API_KEY)
+- **YouTube**: Video integration (YOUTUBE_API_KEY)
+- **Analytics**: Google Analytics, Mixpanel
+- **OAuth**: Google, GitHub, Apple providers
+
+### Feature Flags
+- `FEATURE_GAMIFICATION`: Enable gamification
+- `FEATURE_CHAT`: Enable chat features
+- `FEATURE_VIDEO_CALLS`: Enable video calls
+
+### Development Setup
+1. Copy `.env.example` to `.env`
+2. Configure required services
+3. Run `npm run setup` for complete initialization
+4. Access frontend at `http://localhost:3000`
+5. API runs at `http://localhost:4000`
