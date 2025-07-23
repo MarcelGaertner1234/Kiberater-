@@ -1,13 +1,17 @@
 import { Inter } from 'next/font/google'
 import './globals.css'
 import type { Metadata } from 'next'
+import { AuthProvider } from '@/components/providers/AuthProvider'
+import { ThemeProvider } from '@/components/providers/ThemeProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'KI-Beratung - Ihre KI erfolgreich integrieren',
-  description: 'Personalisierte KI-Beratung für Unternehmen. Von der Analyse bis zur Umsetzung - wir begleiten Sie auf Ihrer KI-Reise.',
-  keywords: 'KI, Künstliche Intelligenz, Beratung, Unternehmensberatung, AI Consulting, Digital Transformation',
+  description:
+    'Personalisierte KI-Beratung für Unternehmen. Von der Analyse bis zur Umsetzung - wir begleiten Sie auf Ihrer KI-Reise.',
+  keywords:
+    'KI, Künstliche Intelligenz, Beratung, Unternehmensberatung, AI Consulting, Digital Transformation',
   authors: [{ name: 'KI-Beratung Team' }],
   openGraph: {
     type: 'website',
@@ -44,15 +48,18 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="de" suppressHydrationWarning>
       <body className={inter.className}>
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

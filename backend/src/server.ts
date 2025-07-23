@@ -15,12 +15,13 @@ import { errorHandler } from './middleware/errorHandler';
 import { rateLimiter } from './middleware/rateLimiter';
 
 // Import routes
-import authRoutes from './api/auth';
+import authRoutes from './api/auth/auth.controller';
 import userRoutes from './api/users';
 import projectRoutes from './api/projects';
 import assessmentRoutes from './api/assessments';
 import contentRoutes from './api/content';
 import analyticsRoutes from './api/analytics';
+import webhookRoutes from './api/webhooks/n8n-endpoints';
 
 // Import utils
 import { logger } from './utils/logger';
@@ -62,6 +63,7 @@ app.use('/api/v1/projects', projectRoutes);
 app.use('/api/v1/assessments', assessmentRoutes);
 app.use('/api/v1/content', contentRoutes);
 app.use('/api/v1/analytics', analyticsRoutes);
+app.use('/api/v1', webhookRoutes);
 
 // Socket.io connection handling
 io.on('connection', (socket) => {

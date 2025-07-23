@@ -1,0 +1,446 @@
+{
+  "name": "KI-Beratung User Onboarding",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "user-registered",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "19406d48-964d-4e96-a7cb-d4718c337b89",
+      "name": "Webhook_User_Registered",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 256],
+      "webhookId": "user-onboarding-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "validate_event",
+              "leftValue": "={{$json.event}}",
+              "rightValue": "user.registered",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "validate_user_id",
+              "leftValue": "={{$json.userId}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "isNotEmpty"
+              }
+            },
+            {
+              "id": "validate_email",
+              "leftValue": "={{$json.email}}",
+              "rightValue": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0302e726-1cbb-442a-b8cf-a0b9a01a5b0f",
+      "name": "Validate_Webhook_Data",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [464, 256]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, email, name, role, onboarding_completed, locale, company_name, company_size FROM users WHERE id = $1",
+        "options": {
+          "queryParams": "={{[$json.userId]}}"
+        }
+      },
+      "id": "6461eba7-ff6c-40bf-9fc4-ae545ba0c48f",
+      "name": "Fetch_User_Data_PostgreSQL",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [688, 160],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "user_exists",
+              "leftValue": "={{$json.id}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "isNotEmpty"
+              }
+            },
+            {
+              "id": "not_onboarded",
+              "leftValue": "={{$json.onboarding_completed}}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equal"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "6ba97808-da80-4d2b-b183-e20b06c239de",
+      "name": "Check_User_Eligible_For_Onboarding",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [896, 160]
+    },
+    {
+      "parameters": {
+        "resource": "text",
+        "operation": "message",
+        "text": "=Erstelle eine personalisierte Willkommensnachricht für einen neuen Nutzer unserer KI-Beratungsplattform.\n\nNutzer-Informationen:\n- Name: {{$node[\"Fetch_User_Data_PostgreSQL\"].json[\"name\"]}}\n- Firma: {{$node[\"Fetch_User_Data_PostgreSQL\"].json[\"company_name\"]}}\n- Firmengröße: {{$node[\"Fetch_User_Data_PostgreSQL\"].json[\"company_size\"]}}\n- Sprache: {{$node[\"Fetch_User_Data_PostgreSQL\"].json[\"locale\"] === 'de' ? 'Deutsch' : 'English'}}\n\nDie Nachricht sollte:\n1. Persönlich und professionell sein\n2. Die nächsten Schritte erklären (Assessment durchführen)\n3. Den Wert unserer KI-Beratung hervorheben\n4. Maximal 150 Wörter lang sein\n5. In der Sprache des Nutzers verfasst sein",
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 300
+        }
+      },
+      "id": "a506095c-1508-419d-98be-531de46c4465",
+      "name": "Generate_Welcome_Content_OpenAI",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1.3,
+      "position": [1120, 32],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-api",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "toEmail": "={{$node[\"Fetch_User_Data_PostgreSQL\"].json[\"email\"]}}",
+        "subject": "={{$node[\"Fetch_User_Data_PostgreSQL\"].json[\"locale\"] === 'de' ? 'Willkommen bei der KI-Beratungsplattform!' : 'Welcome to AI Consulting Platform!'}}",
+        "fromEmail": "={{$credentials.fromEmail}}",
+        "fromName": "KI-Beratungsplattform",
+        "html": "=<html>\n<body style=\"font-family: Arial, sans-serif; line-height: 1.6; color: #333;\">\n  <div style=\"max-width: 600px; margin: 0 auto; padding: 20px;\">\n    <h2 style=\"color: #2563eb;\">{{$node[\"Fetch_User_Data_PostgreSQL\"].json[\"locale\"] === 'de' ? 'Willkommen' : 'Welcome'}}, {{$node[\"Fetch_User_Data_PostgreSQL\"].json[\"name\"]}}!</h2>\n    \n    <div style=\"margin: 20px 0;\">\n      {{$node[\"Generate_Welcome_Content_OpenAI\"].json[\"message\"].content}}\n    </div>\n    \n    <div style=\"margin: 30px 0;\">\n      <a href=\"https://ki-beratung.de/assessment\" style=\"background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;\">\n        {{$node[\"Fetch_User_Data_PostgreSQL\"].json[\"locale\"] === 'de' ? 'Assessment starten' : 'Start Assessment'}}\n      </a>\n    </div>\n    \n    <hr style=\"border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;\">\n    \n    <p style=\"font-size: 14px; color: #6b7280;\">\n      {{$node[\"Fetch_User_Data_PostgreSQL\"].json[\"locale\"] === 'de' ? 'Bei Fragen sind wir gerne für Sie da.' : 'If you have any questions, we\\'re here to help.'}}\n    </p>\n  </div>\n</body>\n</html>",
+        "options": {
+          "sandboxMode": false
+        }
+      },
+      "id": "59e1fbdc-27e1-498a-b9fc-50e90a67e86c",
+      "name": "Send_Welcome_Email_SendGrid",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [1344, 32],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "sendGridApi": {
+          "id": "sendgrid-api",
+          "name": "SendGrid API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE users SET onboarding_email_sent = true, onboarding_email_sent_at = NOW() WHERE id = $1 RETURNING id",
+        "options": {
+          "queryParams": "={{[$node[\"Fetch_User_Data_PostgreSQL\"].json[\"id\"]]}}"
+        }
+      },
+      "id": "e48cbcc6-4c3a-4a97-836a-99be7cfcd889",
+      "name": "Update_Email_Status_PostgreSQL",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [1568, 32],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": "public",
+        "table": "activity_log",
+        "columns": "user_id,action,entity_type,entity_id,metadata",
+        "values": "={{$node[\"Fetch_User_Data_PostgreSQL\"].json[\"id\"]}},onboarding_email_sent,user,{{$node[\"Fetch_User_Data_PostgreSQL\"].json[\"id\"]}},{{JSON.stringify({email_sent_at: new Date().toISOString(), locale: $node[\"Fetch_User_Data_PostgreSQL\"].json[\"locale\"]})}}"
+      },
+      "id": "11a8cf85-701e-4c37-80de-c76a83086fc5",
+      "name": "Log_Activity_PostgreSQL",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [1776, 32],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$credentials.backendApiUrl}}/api/v1/workflows/schedule-followup",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"userId\": \"{{$node[\"Fetch_User_Data_PostgreSQL\"].json[\"id\"]}}\",\n  \"followupType\": \"day_3\",\n  \"scheduleFor\": \"{{new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()}}\",\n  \"workflowId\": \"user-onboarding-followup\",\n  \"locale\": \"{{$node[\"Fetch_User_Data_PostgreSQL\"].json[\"locale\"]}}\"\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "99f45ff8-02ff-4b86-9887-8989b8a0d192",
+      "name": "Schedule_3_Day_Followup",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1120, 160],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "backend-api-auth",
+          "name": "Backend API Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$credentials.backendApiUrl}}/api/v1/workflows/schedule-followup",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"userId\": \"{{$node[\"Fetch_User_Data_PostgreSQL\"].json[\"id\"]}}\",\n  \"followupType\": \"day_7\",\n  \"scheduleFor\": \"{{new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()}}\",\n  \"workflowId\": \"user-onboarding-followup\",\n  \"locale\": \"{{$node[\"Fetch_User_Data_PostgreSQL\"].json[\"locale\"]}}\"\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "6ed6c688-f21b-47f8-ba59-3a3474e254e4",
+      "name": "Schedule_7_Day_Followup",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1344, 160],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "backend-api-auth",
+          "name": "Backend API Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE users SET onboarding_completed = true, onboarding_completed_at = NOW() WHERE id = $1 RETURNING id",
+        "options": {
+          "queryParams": "={{[$node[\"Fetch_User_Data_PostgreSQL\"].json[\"id\"]]}}"
+        }
+      },
+      "id": "aab01d3b-7823-4343-ba7d-e51f2845ac91",
+      "name": "Complete_Onboarding_PostgreSQL",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [1568, 256],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## User Onboarding Workflow\n\n**Zweck:** Automatisierte Begrüßung neuer User mit personalisierten Inhalten\n\n**Trigger:** Webhook bei user.registered Event\n\n**Ablauf:**\n1. Webhook-Validierung (Event, User-ID, E-Mail)\n2. User-Daten aus PostgreSQL laden\n3. Berechtigung prüfen (nicht bereits onboardet)\n4. Personalisierten Willkommenstext generieren (DE/EN)\n5. Welcome-E-Mail via SendGrid versenden\n6. E-Mail-Status in DB updaten\n7. Activity-Log erstellen\n8. Follow-up-E-Mails schedulen (Tag 3, 7)\n9. Onboarding als abgeschlossen markieren\n\n**Credentials benötigt:**\n- Supabase PostgreSQL\n- OpenAI API\n- SendGrid API\n- Backend API Auth\n\n**Anpassungen für KI-Beratungsplattform:**\n- Unterstützt DE/EN basierend auf user.locale\n- Personalisierung mit Firmendaten\n- Integration mit Supabase",
+        "height": 400,
+        "width": 300
+      },
+      "id": "ffb54bdf-6c84-4c12-8bc0-8c80e9a619ce",
+      "name": "Workflow_Documentation",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [16, -32]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook_User_Registered": {
+      "main": [
+        [
+          {
+            "node": "Validate_Webhook_Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate_Webhook_Data": {
+      "main": [
+        [
+          {
+            "node": "Fetch_User_Data_PostgreSQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch_User_Data_PostgreSQL": {
+      "main": [
+        [
+          {
+            "node": "Check_User_Eligible_For_Onboarding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check_User_Eligible_For_Onboarding": {
+      "main": [
+        [
+          {
+            "node": "Generate_Welcome_Content_OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate_Welcome_Content_OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Send_Welcome_Email_SendGrid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send_Welcome_Email_SendGrid": {
+      "main": [
+        [
+          {
+            "node": "Update_Email_Status_PostgreSQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update_Email_Status_PostgreSQL": {
+      "main": [
+        [
+          {
+            "node": "Log_Activity_PostgreSQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log_Activity_PostgreSQL": {
+      "main": [
+        [
+          {
+            "node": "Schedule_3_Day_Followup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule_3_Day_Followup": {
+      "main": [
+        [
+          {
+            "node": "Schedule_7_Day_Followup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule_7_Day_Followup": {
+      "main": [
+        [
+          {
+            "node": "Complete_Onboarding_PostgreSQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ki-beratung-v1",
+  "meta": {
+    "templateId": "user-onboarding-ki-beratung"
+  },
+  "id": "user-onboarding-workflow",
+  "tags": ["onboarding", "email", "automation"]
+}

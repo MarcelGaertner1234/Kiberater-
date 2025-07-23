@@ -1,19 +1,129 @@
-# API Endpoints - REST API Dokumentation
+# API Endpoints Documentation
+
+## Authentication Endpoints
+
+### POST /api/auth/register
+
+**Description:** User registration endpoint
+
+**Request Body:**
+
+```json
+{
+  "name": "string (min 2 chars)",
+  "email": "string (valid email)",
+  "password": "string (min 8 chars, contains uppercase, lowercase, number)",
+  "companyName": "string (optional)",
+  "companySize": "enum (optional): freelancer|startup|small|medium|large",
+  "industry": "string (optional)"
+}
+```
+
+**Response:**
+
+```json
+{
+  "message": "Benutzer erfolgreich erstellt",
+  "user": {
+    "id": "uuid",
+    "email": "string",
+    "name": "string",
+    "companyName": "string",
+    "companySize": "enum",
+    "industry": "string",
+    "role": "user",
+    "locale": "de",
+    "timezone": "Europe/Berlin",
+    "emailVerified": false,
+    "onboardingCompleted": false,
+    "createdAt": "timestamp",
+    "updatedAt": "timestamp"
+  }
+}
+```
+
+**Error Responses:**
+
+- 400: Validation error or user already exists
+- 500: Internal server error
+
+### GET|POST /api/auth/[...nextauth]
+
+**Description:** NextAuth.js authentication endpoints
+
+**Supported Providers:**
+
+- Credentials (email/password)
+- Google OAuth
+
+**Automatic Redirects:**
+
+- Success: `/dashboard`
+- Error: `/auth/error`
+
+## Protected Routes
+
+### Middleware Protection
+
+The following routes require authentication:
+
+- `/dashboard/*`
+- `/projects/*`
+- `/assessment/*`
+- `/admin/*`
+
+### Public Routes
+
+- `/auth/login`
+- `/auth/register`
+- `/auth/error`
+- `/` (landing page)
+
+## Session Management
+
+### Session Structure
+
+```json
+{
+  "user": {
+    "id": "string",
+    "email": "string",
+    "name": "string",
+    "image": "string",
+    "role": "user|advisor|admin"
+  },
+  "expires": "timestamp"
+}
+```
+
+### Authentication Flow
+
+1. User submits credentials via login form
+2. NextAuth validates against Prisma database
+3. JWT token created with user info
+4. Middleware protects routes based on token
+5. Logout clears session and redirects to home
 
 ## Übersicht
-RESTful API für die KI-Beratungsplattform. Alle Endpoints folgen REST-Konventionen und verwenden JSON für Request/Response.
+
+RESTful API für die KI-Beratungsplattform. Alle Endpoints folgen
+REST-Konventionen und verwenden JSON für Request/Response.
 
 ## Base URL
+
 - Development: `http://localhost:3001/api/v1`
 - Production: `https://api.ki-beratung.de/v1`
 
 ## Authentifizierung
+
 JWT Bearer Token in Authorization Header:
+
 ```
 Authorization: Bearer <token>
 ```
 
 ## Response Format
+
 ```json
 {
   "success": true,
@@ -27,6 +137,7 @@ Authorization: Bearer <token>
 ```
 
 ## Error Format
+
 ```json
 {
   "success": false,
@@ -44,7 +155,9 @@ Authorization: Bearer <token>
 ### Authentication
 
 #### POST /auth/register
+
 Neue Benutzerregistrierung
+
 ```json
 // Request
 {
@@ -72,7 +185,9 @@ Neue Benutzerregistrierung
 ```
 
 #### POST /auth/login
+
 Benutzer-Login
+
 ```json
 // Request
 {
@@ -84,15 +199,20 @@ Benutzer-Login
 ```
 
 #### POST /auth/oauth/:provider
+
 OAuth Login initiieren
+
 - Providers: google, github, apple
 - Redirect zu OAuth Provider
 
 #### POST /auth/oauth/:provider/callback
+
 OAuth Callback verarbeiten
 
 #### POST /auth/refresh
+
 Token erneuern
+
 ```json
 // Request
 {
@@ -101,10 +221,13 @@ Token erneuern
 ```
 
 #### POST /auth/logout
+
 Benutzer ausloggen (Token invalidieren)
 
 #### POST /auth/forgot-password
+
 Passwort-Reset anfordern
+
 ```json
 {
   "email": "user@example.com"
@@ -114,7 +237,9 @@ Passwort-Reset anfordern
 ### User Management
 
 #### GET /users/me
+
 Aktuellen Benutzer abrufen
+
 ```json
 // Response
 {
@@ -131,7 +256,9 @@ Aktuellen Benutzer abrufen
 ```
 
 #### PUT /users/me
+
 Profil aktualisieren
+
 ```json
 // Request
 {
@@ -142,13 +269,17 @@ Profil aktualisieren
 ```
 
 #### POST /users/me/avatar
+
 Avatar hochladen (multipart/form-data)
 
 ### Assessment
 
 #### GET /assessments/questions/:type
+
 Fragen für Assessment abrufen
+
 - Types: quick (5 Fragen), detailed (15 Fragen)
+
 ```json
 // Response
 {
@@ -161,8 +292,11 @@ Fragen für Assessment abrufen
       },
       "type": "single_choice",
       "options": [
-        {"value": "freelancer", "label": {"de": "Freelancer", "en": "Freelancer"}},
-        {"value": "startup", "label": {"de": "Startup", "en": "Startup"}}
+        {
+          "value": "freelancer",
+          "label": { "de": "Freelancer", "en": "Freelancer" }
+        },
+        { "value": "startup", "label": { "de": "Startup", "en": "Startup" } }
       ],
       "required": true
     }
@@ -171,7 +305,9 @@ Fragen für Assessment abrufen
 ```
 
 #### POST /assessments
+
 Assessment einreichen
+
 ```json
 // Request
 {
@@ -200,21 +336,27 @@ Assessment einreichen
 ```
 
 #### GET /assessments
+
 Alle Assessments des Users
 
 #### GET /assessments/:id
+
 Einzelnes Assessment mit Details
 
 ### Roadmaps
 
 #### GET /roadmaps
+
 Roadmaps des Benutzers
 
 #### GET /roadmaps/:id
+
 Einzelne Roadmap mit Meilensteinen
 
 #### POST /roadmaps/generate
+
 Roadmap aus Assessment generieren
+
 ```json
 // Request
 {
@@ -226,13 +368,17 @@ Roadmap aus Assessment generieren
 ### Projects
 
 #### GET /projects
+
 Projekte mit Filterung und Pagination
+
 ```
 GET /projects?status=active&page=1&limit=20
 ```
 
 #### POST /projects
+
 Neues Projekt erstellen
+
 ```json
 // Request
 {
@@ -244,21 +390,27 @@ Neues Projekt erstellen
 ```
 
 #### GET /projects/:id
+
 Einzelnes Projekt mit Tasks
 
 #### PUT /projects/:id
+
 Projekt aktualisieren
 
 #### DELETE /projects/:id
+
 Projekt archivieren (Soft Delete)
 
 ### Tasks
 
 #### GET /projects/:projectId/tasks
+
 Alle Tasks eines Projekts
 
 #### POST /projects/:projectId/tasks
+
 Neue Task erstellen
+
 ```json
 {
   "title": "Anforderungen definieren",
@@ -269,10 +421,13 @@ Neue Task erstellen
 ```
 
 #### PUT /tasks/:id
+
 Task aktualisieren (inkl. Status-Änderung)
 
 #### PUT /tasks/:id/move
+
 Task Position ändern (Drag & Drop)
+
 ```json
 {
   "status": "in_progress",
@@ -281,18 +436,23 @@ Task Position ändern (Drag & Drop)
 ```
 
 #### DELETE /tasks/:id
+
 Task löschen
 
 ### Messages
 
 #### GET /messages
+
 Nachrichten abrufen (mit Pagination)
+
 ```
 GET /messages?page=1&limit=50&unread=true
 ```
 
 #### POST /messages
+
 Nachricht senden
+
 ```json
 {
   "recipient_id": "advisor-uuid",
@@ -302,21 +462,25 @@ Nachricht senden
 ```
 
 #### PUT /messages/:id/read
+
 Nachricht als gelesen markieren
 
 #### GET /messages/conversations
+
 Konversations-Übersicht (gruppiert nach Gesprächspartner)
 
 ### Subscriptions
 
 #### GET /subscriptions/plans
+
 Verfügbare Pläne mit Preisen
+
 ```json
 {
   "plans": [
     {
       "id": "starter",
-      "name": {"de": "Starter", "en": "Starter"},
+      "name": { "de": "Starter", "en": "Starter" },
       "price": {
         "monthly": 49,
         "currency": "EUR"
@@ -328,7 +492,9 @@ Verfügbare Pläne mit Preisen
 ```
 
 #### POST /subscriptions/checkout
+
 Stripe Checkout Session erstellen
+
 ```json
 // Request
 {
@@ -344,18 +510,23 @@ Stripe Checkout Session erstellen
 ```
 
 #### POST /subscriptions/webhook
+
 Stripe Webhook Handler (internal)
 
 #### GET /subscriptions/current
+
 Aktuelle Subscription Details
 
 #### POST /subscriptions/cancel
+
 Subscription kündigen
 
 ### Analytics (nur für User)
 
 #### GET /analytics/dashboard
+
 Dashboard-Metriken
+
 ```json
 {
   "projects_count": 5,
@@ -367,7 +538,9 @@ Dashboard-Metriken
 ```
 
 #### GET /analytics/progress
+
 Fortschritts-Tracking
+
 ```json
 {
   "roadmap_progress": 65,
@@ -379,13 +552,17 @@ Fortschritts-Tracking
 ### Admin Endpoints (role: admin/advisor)
 
 #### GET /admin/users
+
 Alle Benutzer (mit Filterung)
 
 #### GET /admin/users/:id
+
 Benutzer-Details für Berater
 
 #### PUT /admin/users/:id/assign-advisor
+
 Berater zuweisen
+
 ```json
 {
   "advisor_id": "uuid"
@@ -393,9 +570,11 @@ Berater zuweisen
 ```
 
 #### GET /admin/analytics
+
 Platform-weite Analytics
 
 #### POST /admin/broadcast
+
 Nachricht an mehrere User
 
 ## Rate Limiting
@@ -405,6 +584,7 @@ Nachricht an mehrere User
 - Premium: 500 requests/minute
 
 Headers:
+
 ```
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95
@@ -414,10 +594,12 @@ X-RateLimit-Reset: 1642680000
 ## Pagination
 
 Standard-Parameter:
+
 - `page`: Seitennummer (default: 1)
 - `limit`: Einträge pro Seite (default: 20, max: 100)
 
 Response Meta:
+
 ```json
 {
   "meta": {
@@ -434,20 +616,24 @@ Response Meta:
 ## Filtering & Sorting
 
 ### Filtering
+
 ```
 GET /projects?status=active&priority=high
 ```
 
 ### Sorting
+
 ```
 GET /tasks?sort=-created_at,title
 ```
+
 - `-` prefix für DESC
 - Ohne prefix für ASC
 
 ## Websocket Events (für später)
 
 Wenn Socket.io implementiert wird:
+
 ```javascript
 // Events
 'message:new'
@@ -466,6 +652,7 @@ Wenn Socket.io implementiert wird:
 ## Security Headers
 
 Alle Responses enthalten:
+
 ```
 X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
@@ -476,16 +663,19 @@ Strict-Transport-Security: max-age=31536000
 ## CORS
 
 Erlaubte Origins:
+
 - Development: `http://localhost:3000`
 - Production: `https://app.ki-beratung.de`
 
 ## Testing
 
 ### Postman Collection
+
 - Import: `/docs/postman/ki-beratung-api.json`
 - Environment Variables für Auth Tokens
 
 ### Example cURL
+
 ```bash
 # Login
 curl -X POST http://localhost:3001/api/v1/auth/login \

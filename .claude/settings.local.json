@@ -7,7 +7,12 @@
       "Bash(cat:*)",
       "Bash(git remote add:*)",
       "Bash(git init:*)",
-      "Bash(git remote set-url:*)"
+      "Bash(git remote set-url:*)",
+      "Bash(find:*)",
+      "Bash(wc:*)",
+      "Bash(mkdir:*)",
+      "Bash(touch:*)",
+      "Bash(git add:*)"
     ],
     "deny": []
   }
