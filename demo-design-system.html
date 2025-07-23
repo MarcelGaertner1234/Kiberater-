@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KI-Beratung Platform - Design System Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Tailwind Config mit Notion-Farben
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'notion-bg': '#ffffff',
+                        'notion-bg-secondary': '#f8f8f7',
+                        'notion-bg-hover': '#f1f1ef',
+                        'notion-text': '#37352f',
+                        'notion-text-secondary': '#787774',
+                        'notion-border': '#e9e9e7',
+                        'notion-blue': '#2383e2',
+                        'notion-blue-bg': '#e3f2fd',
+                        'notion-red': '#eb5757',
+                        'notion-red-bg': '#fdebeb',
+                        'notion-yellow': '#f7b731',
+                        'notion-yellow-bg': '#fbf3db',
+                        'notion-green': '#0fc972',
+                        'notion-green-bg': '#dbf7ed',
+                        'notion-purple': '#9065b0',
+                        'notion-purple-bg': '#f6f3f8',
+                        'notion-dark-bg': '#191919',
+                        'notion-dark-bg-secondary': '#202020',
+                        'notion-dark-bg-hover': '#2a2a2a',
+                        'notion-dark-text': '#ebebea',
+                        'notion-dark-text-secondary': '#979797',
+                        'notion-dark-border': '#373737'
+                    },
+                    fontFamily: {
+                        'notion': '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif'
+                    },
+                    animation: {
+                        'notion-fade-in': 'notionFadeIn 0.3s ease-out',
+                        'notion-slide-in': 'notionSlideIn 0.3s ease-out'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* CSS Variables für Theme-Switching */
+        :root {
+            --notion-bg: 255 255 255;
+            --notion-text: 55 53 47;
+            --notion-border: 233 233 231;
+        }
+
+        .dark {
+            --notion-bg: 25 25 25;
+            --notion-text: 235 235 234;
+            --notion-border: 55 55 55;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        }
+
+        /* Animations */
+        @keyframes notionFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes notionSlideIn {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Button Styles */
+        .notion-button {
+            @apply inline-flex items-center justify-center rounded px-3 py-1.5 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-notion-blue focus:ring-offset-2;
+        }
+
+        .notion-button-primary {
+            @apply bg-notion-blue text-white hover:bg-blue-600 active:bg-blue-700;
+        }
+
+        .notion-button-secondary {
+            @apply bg-notion-bg-secondary text-notion-text hover:bg-notion-bg-hover dark:bg-notion-dark-bg-secondary dark:text-notion-dark-text dark:hover:bg-notion-dark-bg-hover;
+        }
+
+        .notion-button-ghost {
+            @apply text-notion-text-secondary hover:bg-notion-bg-hover hover:text-notion-text dark:text-notion-dark-text-secondary dark:hover:bg-notion-dark-bg-hover dark:hover:text-notion-dark-text;
+        }
+
+        /* Card Styles */
+        .notion-card {
+            @apply bg-white rounded-lg border border-notion-border p-4 shadow-sm transition-all duration-200 hover:shadow-md dark:bg-notion-dark-bg-secondary dark:border-notion-dark-border;
+        }
+
+        /* Sidebar Styles */
+        .notion-sidebar-item {
+            @apply flex items-center rounded px-3 py-1.5 text-sm text-notion-text-secondary transition-colors hover:bg-notion-bg-hover hover:text-notion-text dark:text-notion-dark-text-secondary dark:hover:bg-notion-dark-bg-hover dark:hover:text-notion-dark-text;
+        }
+
+        .notion-sidebar-item-active {
+            @apply bg-notion-bg-hover text-notion-text dark:bg-notion-dark-bg-hover dark:text-notion-dark-text;
+        }
+
+        /* Badge Styles */
+        .notion-badge {
+            @apply inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium;
+        }
+
+        /* Loading Spinner */
+        .notion-spinner {
+            @apply animate-spin rounded-full border-2 border-notion-border border-t-notion-blue;
+        }
+    </style>
+</head>
+<body class="bg-notion-bg text-notion-text dark:bg-notion-dark-bg dark:text-notion-dark-text">
+    <!-- Theme Toggle -->
+    <div class="fixed top-4 right-4 z-50">
+        <button onclick="toggleTheme()" class="notion-button notion-button-ghost">
+            <span id="theme-icon">🌙</span>
+        </button>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <div class="mb-12 text-center animate-notion-fade-in">
+            <h1 class="text-4xl font-bold mb-4">KI-Beratung Platform Design System</h1>
+            <p class="text-notion-text-secondary dark:text-notion-dark-text-secondary">
+                Notion-inspiriertes Design System für konsistente UI/UX
+            </p>
+        </div>
+
+        <!-- Colors Section -->
+        <section class="mb-12 animate-notion-slide-in">
+            <h2 class="text-2xl font-semibold mb-6">Farben</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="notion-card">
+                    <div class="w-full h-20 bg-notion-blue rounded mb-2"></div>
+                    <p class="text-sm font-medium">Primary Blue</p>
+                    <p class="text-xs text-notion-text-secondary">#2383e2</p>
+                </div>
+                <div class="notion-card">
+                    <div class="w-full h-20 bg-notion-green rounded mb-2"></div>
+                    <p class="text-sm font-medium">Success Green</p>
+                    <p class="text-xs text-notion-text-secondary">#0fc972</p>
+                </div>
+                <div class="notion-card">
+                    <div class="w-full h-20 bg-notion-red rounded mb-2"></div>
+                    <p class="text-sm font-medium">Danger Red</p>
+                    <p class="text-xs text-notion-text-secondary">#eb5757</p>
+                </div>
+                <div class="notion-card">
+                    <div class="w-full h-20 bg-notion-yellow rounded mb-2"></div>
+                    <p class="text-sm font-medium">Warning Yellow</p>
+                    <p class="text-xs text-notion-text-secondary">#f7b731</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Buttons Section -->
+        <section class="mb-12 animate-notion-slide-in" style="animation-delay: 0.1s">
+            <h2 class="text-2xl font-semibold mb-6">Buttons</h2>
+            <div class="notion-card">
+                <div class="space-y-4">
+                    <div class="flex flex-wrap gap-3">
+                        <button class="notion-button notion-button-primary">Primary Button</button>
+                        <button class="notion-button notion-button-secondary">Secondary Button</button>
+                        <button class="notion-button notion-button-ghost">Ghost Button</button>
+                        <button class="notion-button bg-notion-red text-white hover:bg-red-600">Danger Button</button>
+                        <button class="notion-button bg-notion-green text-white hover:bg-green-600">Success Button</button>
+                    </div>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="notion-button notion-button-primary text-xs px-2 py-1">Small</button>
+                        <button class="notion-button notion-button-primary">Medium</button>
+                        <button class="notion-button notion-button-primary text-base px-4 py-2">Large</button>
+                    </div>
+                    <div class="flex gap-3">
+                        <button class="notion-button notion-button-primary" disabled>Disabled</button>
+                        <button class="notion-button notion-button-primary">
+                            <span class="notion-spinner w-4 h-4 mr-2"></span>
+                            Loading...
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cards Section -->
+        <section class="mb-12 animate-notion-slide-in" style="animation-delay: 0.2s">
+            <h2 class="text-2xl font-semibold mb-6">Cards</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="notion-card">
+                    <h3 class="font-semibold mb-2">Standard Card</h3>
+                    <p class="text-sm text-notion-text-secondary dark:text-notion-dark-text-secondary">
+                        Eine einfache Karte mit Hover-Effekt und sanftem Schatten.
+                    </p>
+                </div>
+                <div class="notion-card border-notion-blue">
+                    <h3 class="font-semibold mb-2 text-notion-blue">Highlighted Card</h3>
+                    <p class="text-sm text-notion-text-secondary dark:text-notion-dark-text-secondary">
+                        Eine Karte mit blauer Umrandung für wichtige Inhalte.
+                    </p>
+                </div>
+                <div class="notion-card bg-notion-blue-bg dark:bg-notion-dark-bg-hover">
+                    <h3 class="font-semibold mb-2">Info Card</h3>
+                    <p class="text-sm text-notion-text-secondary dark:text-notion-dark-text-secondary">
+                        Eine Karte mit farbigem Hintergrund für Informationen.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sidebar Example -->
+        <section class="mb-12 animate-notion-slide-in" style="animation-delay: 0.3s">
+            <h2 class="text-2xl font-semibold mb-6">Sidebar Navigation</h2>
+            <div class="notion-card p-0 overflow-hidden">
+                <div class="flex">
+                    <div class="w-64 bg-notion-bg-secondary dark:bg-notion-dark-bg border-r border-notion-border dark:border-notion-dark-border p-4">
+                        <div class="space-y-1">
+                            <div class="notion-sidebar-item notion-sidebar-item-active">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                </svg>
+                                Dashboard
+                            </div>
+                            <div class="notion-sidebar-item">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                </svg>
+                                Projekte
+                                <span class="ml-auto notion-badge bg-notion-blue-bg text-notion-blue">3</span>
+                            </div>
+                            <div class="notion-sidebar-item">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                </svg>
+                                Lernbereich
+                            </div>
+                            <div class="notion-sidebar-item">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                </svg>
+                                Chat
+                                <span class="ml-auto notion-badge bg-notion-green-bg text-notion-green">●</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 p-6">
+                        <h3 class="text-lg font-semibold mb-2">Sidebar Content</h3>
+                        <p class="text-sm text-notion-text-secondary dark:text-notion-dark-text-secondary">
+                            Die Sidebar verwendet Notion-typische Hover-Effekte und zeigt aktive Zustände deutlich an.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Typography Section -->
+        <section class="mb-12 animate-notion-slide-in" style="animation-delay: 0.4s">
+            <h2 class="text-2xl font-semibold mb-6">Typografie</h2>
+            <div class="notion-card space-y-4">
+                <h1 class="text-4xl font-bold">Heading 1 - Page Title</h1>
+                <h2 class="text-2xl font-semibold">Heading 2 - Section Title</h2>
+                <h3 class="text-xl font-semibold">Heading 3 - Subsection</h3>
+                <h4 class="text-lg font-medium">Heading 4 - Card Title</h4>
+                <p class="text-base">Body Text - Dies ist ein normaler Absatz mit Standardtext.</p>
+                <p class="text-sm text-notion-text-secondary dark:text-notion-dark-text-secondary">
+                    Secondary Text - Für zusätzliche Informationen und Hinweise.
+                </p>
+                <p class="text-xs text-notion-text-secondary dark:text-notion-dark-text-secondary">
+                    Caption Text - Sehr kleine Texte für Metadaten.
+                </p>
+            </div>
+        </section>
+
+        <!-- Forms Section -->
+        <section class="mb-12 animate-notion-slide-in" style="animation-delay: 0.5s">
+            <h2 class="text-2xl font-semibold mb-6">Formulare</h2>
+            <div class="notion-card">
+                <form class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Text Input</label>
+                        <input type="text" placeholder="Geben Sie Text ein..." 
+                               class="w-full px-3 py-2 text-sm border border-notion-border rounded-md focus:outline-none focus:ring-2 focus:ring-notion-blue focus:border-transparent dark:bg-notion-dark-bg dark:border-notion-dark-border">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Select</label>
+                        <select class="w-full px-3 py-2 text-sm border border-notion-border rounded-md focus:outline-none focus:ring-2 focus:ring-notion-blue focus:border-transparent dark:bg-notion-dark-bg dark:border-notion-dark-border">
+                            <option>Option 1</option>
+                            <option>Option 2</option>
+                            <option>Option 3</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Textarea</label>
+                        <textarea rows="3" placeholder="Mehrzeiliger Text..." 
+                                  class="w-full px-3 py-2 text-sm border border-notion-border rounded-md focus:outline-none focus:ring-2 focus:ring-notion-blue focus:border-transparent dark:bg-notion-dark-bg dark:border-notion-dark-border"></textarea>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="checkbox" class="mr-2">
+                        <label for="checkbox" class="text-sm">Checkbox Option</label>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Badges & Tags -->
+        <section class="mb-12 animate-notion-slide-in" style="animation-delay: 0.6s">
+            <h2 class="text-2xl font-semibold mb-6">Badges & Tags</h2>
+            <div class="notion-card">
+                <div class="flex flex-wrap gap-2">
+                    <span class="notion-badge bg-notion-blue-bg text-notion-blue">Information</span>
+                    <span class="notion-badge bg-notion-green-bg text-notion-green">Success</span>
+                    <span class="notion-badge bg-notion-yellow-bg text-notion-yellow">Warning</span>
+                    <span class="notion-badge bg-notion-red-bg text-notion-red">Error</span>
+                    <span class="notion-badge bg-notion-purple-bg text-notion-purple">Special</span>
+                    <span class="notion-badge bg-notion-bg-secondary text-notion-text dark:bg-notion-dark-bg-hover dark:text-notion-dark-text">Default</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading States -->
+        <section class="mb-12 animate-notion-slide-in" style="animation-delay: 0.7s">
+            <h2 class="text-2xl font-semibold mb-6">Loading States</h2>
+            <div class="notion-card">
+                <div class="flex items-center space-x-8">
+                    <div class="text-center">
+                        <div class="notion-spinner w-8 h-8 mb-2"></div>
+                        <p class="text-sm">Small</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="notion-spinner w-12 h-12 mb-2"></div>
+                        <p class="text-sm">Medium</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="notion-spinner w-16 h-16 mb-2"></div>
+                        <p class="text-sm">Large</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hover Effects Demo -->
+        <section class="mb-12 animate-notion-slide-in" style="animation-delay: 0.8s">
+            <h2 class="text-2xl font-semibold mb-6">Hover-Effekte</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="p-4 rounded-lg border border-notion-border transition-all duration-200 hover:bg-notion-bg-hover hover:shadow-md cursor-pointer dark:border-notion-dark-border dark:hover:bg-notion-dark-bg-hover">
+                    <h3 class="font-medium mb-2">Hover Card</h3>
+                    <p class="text-sm text-notion-text-secondary dark:text-notion-dark-text-secondary">
+                        Hover für Hintergrund und Schatten
+                    </p>
+                </div>
+                <div class="p-4 rounded-lg bg-notion-bg-secondary transition-all duration-200 hover:scale-105 cursor-pointer dark:bg-notion-dark-bg-secondary">
+                    <h3 class="font-medium mb-2">Scale Effect</h3>
+                    <p class="text-sm text-notion-text-secondary dark:text-notion-dark-text-secondary">
+                        Hover für leichte Vergrößerung
+                    </p>
+                </div>
+                <div class="p-4 rounded-lg border-2 border-transparent transition-all duration-200 hover:border-notion-blue cursor-pointer">
+                    <h3 class="font-medium mb-2">Border Effect</h3>
+                    <p class="text-sm text-notion-text-secondary dark:text-notion-dark-text-secondary">
+                        Hover für blaue Umrandung
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Theme Toggle Function
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Initialize theme from localStorage
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.getElementById('theme-icon').textContent = '☀️';
+        }
+    </script>
+</body>
+</html>

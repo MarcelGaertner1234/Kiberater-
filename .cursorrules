@@ -1,0 +1,171 @@
+# Cursor Multi-Agent Rules - KI-Beratungsplattform
+
+## 🎯 Project Context
+You are working on a KI consulting platform MVP with:
+- Frontend: Next.js 14, TypeScript, Tailwind
+- Backend: Express, PostgreSQL, Prisma
+- Features: Assessment → Roadmap → Projects → Chat
+
+## ⚠️ CRITICAL RULES FOR ALL AGENTS
+
+### 1. NO CODE DUPLICATION
+- ALWAYS check /lib, /utils, /hooks before creating new functions
+- NEVER duplicate event handlers or listeners
+- Extract common patterns immediately
+
+### 2. NO ASSUMPTIONS - ALWAYS ASK
+Before implementing ANY feature, ask about:
+- Database fields to store
+- Navigation after success/error
+- Validation rules
+- Error handling approach
+- User permissions
+
+### 3. EVENT HANDLER SAFETY
+```typescript
+// ALWAYS use cleanup:
+useEffect(() => {
+  const handler = () => {};
+  element.addEventListener('event', handler);
+  return () => element.removeEventListener('event', handler);
+}, [deps]);
+```
+
+### 4. DOCUMENTATION SYNC
+After EVERY change:
+- API changes → Update /docs/API_ENDPOINTS.md
+- DB changes → Update /docs/DATABASE_MVP.md
+- Components → Update /docs/COMPONENTS_HIERARCHY.md
+
+## 🤖 AGENT ROLES & RESPONSIBILITIES
+
+### Frontend Agent
+- Components in /frontend/src/components
+- Use existing hooks from /frontend/src/lib
+- Follow Atomic Design (atoms → molecules → organisms)
+- ALWAYS use TypeScript
+- i18n keys in /frontend/public/locales
+
+### Backend Agent  
+- API routes in /backend/src/api
+- Business logic in /backend/src/services
+- ALWAYS use ApiError for errors
+- Validate with Zod schemas
+- Update Prisma schema when needed
+
+### Database Agent
+- Schema in /backend/prisma/schema.prisma
+- Migrations with descriptive names
+- ALWAYS backup before destructive changes
+- Document relationships clearly
+
+### DevOps Agent
+- Docker configs in /infrastructure
+- GitHub Actions in /.github/workflows
+- Environment examples in .env.example
+- Security-first approach
+
+## 📋 TASK HANDOFF PROTOCOL
+
+### Before Context Clear:
+1. Update .agent-state.json with:
+   ```json
+   {
+     "current_task": "What you were doing",
+     "completed_steps": ["step1", "step2"],
+     "next_steps": ["step3", "step4"],
+     "blocking_issues": [],
+     "important_context": {}
+   }
+   ```
+
+2. Update docs/CURRENT_TASK.md with:
+   - What was completed
+   - What remains
+   - Any decisions made
+   - Open questions
+
+3. Add code comments:
+   ```typescript
+   // TODO: [AGENT-FRONTEND] Complete form validation
+   // FIXME: [AGENT-BACKEND] Add rate limiting here
+   // NOTE: [HANDOFF] Database schema needs X field for Y
+   ```
+
+## 🛠️ COMMON PATTERNS TO USE
+
+### API Calls
+```typescript
+// Frontend - ALWAYS use this:
+const { data, error, loading } = useApi('/endpoint');
+```
+
+### Forms
+```typescript
+// ALWAYS use this structure:
+const schema = z.object({...});
+const form = useForm({ resolver: zodResolver(schema) });
+```
+
+### Error Handling
+```typescript
+// Backend - ALWAYS:
+throw new ApiError(statusCode, message, details);
+```
+
+## 🚫 NEVER DO THIS
+
+1. **Direct DOM manipulation** in React
+2. **Hardcoded strings** - use i18n
+3. **Direct database queries** - use Prisma
+4. **Assumptions about data** - validate everything
+5. **Skip error handling** - handle all cases
+6. **Forget mobile view** - test responsive
+7. **Mix languages** - keep consistent (DE/EN)
+
+## 📁 PROJECT STRUCTURE REMINDER
+
+```
+/frontend/src/
+  /app          → Pages (App Router)
+  /components   → Reusable components  
+  /lib          → Utilities, hooks
+  
+/backend/src/
+  /api          → Route handlers
+  /services     → Business logic
+  /utils        → Helpers
+  /middleware   → Express middleware
+```
+
+## 🔄 WORKFLOW CHECKLIST
+
+Before starting ANY task:
+- [ ] Read CLAUDE.md
+- [ ] Check .agent-state.json
+- [ ] Read docs/CURRENT_TASK.md
+- [ ] Search for existing implementations
+
+After completing ANY task:
+- [ ] Update documentation
+- [ ] Add tests if applicable
+- [ ] Update .agent-state.json
+- [ ] Clear handoff comments
+- [ ] Run linter and formatter
+
+## 💡 QUICK REFERENCES
+
+- Commands: `npm run dev`, `npm run test`, `npm run lint`
+- Ports: Frontend :3000, Backend :3001
+- Database: PostgreSQL on :5432
+- API Base: http://localhost:3001/api/v1
+
+## 🆘 WHEN STUCK
+
+1. Check existing patterns in codebase
+2. Read relevant docs in /docs
+3. Look for TODO/FIXME comments
+4. Check .agent-state.json for context
+5. Ask user for clarification - don't assume!
+
+Remember: This is an MVP - keep it simple, make it work, document everything!

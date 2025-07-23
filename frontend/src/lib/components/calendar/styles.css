@@ -1,0 +1,169 @@
+/* Notion-Style Overrides für react-big-calendar */
+
+/* Base Calendar Styles */
+.notion-calendar {
+  @apply font-notion;
+  @apply text-notion-text dark:text-notion-dark-text;
+}
+
+/* Month View */
+.notion-calendar .rbc-month-view {
+  @apply border-0;
+}
+
+.notion-calendar .rbc-month-header {
+  @apply bg-notion-bg-secondary dark:bg-notion-dark-bg-secondary;
+  @apply border-b border-notion-border dark:border-notion-dark-border;
+}
+
+.notion-calendar .rbc-header {
+  @apply py-2 px-3 text-sm font-medium;
+  @apply border-0;
+}
+
+/* Calendar Cells */
+.notion-calendar .rbc-date-cell {
+  @apply text-right pr-2 pt-1;
+}
+
+.notion-calendar .rbc-month-row {
+  @apply border-b border-notion-border dark:border-notion-dark-border;
+}
+
+.notion-calendar .rbc-day-bg {
+  @apply hover:bg-notion-bg-hover dark:hover:bg-notion-dark-bg-hover;
+  @apply transition-colors duration-notion;
+}
+
+.notion-calendar .rbc-off-range-bg {
+  @apply bg-notion-bg-secondary/50 dark:bg-notion-dark-bg-secondary/50;
+}
+
+.notion-calendar .rbc-today {
+  @apply bg-notion-blue-light/30 dark:bg-notion-dark-blue/10;
+}
+
+/* Events */
+.notion-calendar .rbc-event {
+  @apply rounded-notion;
+  @apply text-xs font-medium;
+  @apply px-1.5 py-0.5;
+  @apply transition-all duration-notion;
+  @apply hover:shadow-notion-sm;
+  @apply cursor-pointer;
+}
+
+.notion-calendar .rbc-event:focus {
+  @apply outline-none shadow-notion-glow;
+}
+
+.notion-calendar .rbc-event-label {
+  @apply hidden;
+}
+
+.notion-calendar .rbc-event-content {
+  @apply truncate;
+}
+
+/* Selected State */
+.notion-calendar .rbc-selected {
+  @apply bg-notion-blue-dark !important;
+}
+
+/* Agenda View */
+.notion-calendar .rbc-agenda-view {
+  @apply border-0;
+}
+
+.notion-calendar .rbc-agenda-table {
+  @apply border-0;
+}
+
+.notion-calendar .rbc-agenda-time-cell {
+  @apply text-sm text-notion-text-secondary dark:text-notion-dark-text-secondary;
+  @apply whitespace-nowrap pr-4;
+}
+
+.notion-calendar .rbc-agenda-date-cell {
+  @apply text-sm font-medium;
+}
+
+.notion-calendar .rbc-agenda-event-cell {
+  @apply text-sm;
+}
+
+/* Week/Day View */
+.notion-calendar .rbc-time-view {
+  @apply border-0;
+}
+
+.notion-calendar .rbc-time-header {
+  @apply border-b border-notion-border dark:border-notion-dark-border;
+}
+
+.notion-calendar .rbc-time-content {
+  @apply border-t border-notion-border dark:border-notion-dark-border;
+}
+
+.notion-calendar .rbc-time-slot {
+  @apply border-t border-notion-border/50 dark:border-notion-dark-border/50;
+}
+
+.notion-calendar .rbc-timeslot-group {
+  @apply border-b border-notion-border dark:border-notion-dark-border;
+}
+
+.notion-calendar .rbc-current-time-indicator {
+  @apply bg-notion-red;
+  height: 2px;
+}
+
+/* Time Gutter */
+.notion-calendar .rbc-time-gutter {
+  @apply text-xs text-notion-text-secondary dark:text-notion-dark-text-secondary;
+}
+
+/* Selection */
+.notion-calendar .rbc-slot-selecting {
+  @apply bg-notion-blue-light/50 dark:bg-notion-dark-blue/20;
+}
+
+/* Scrollbar */
+.notion-calendar ::-webkit-scrollbar {
+  @apply w-2 h-2;
+}
+
+.notion-calendar ::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.notion-calendar ::-webkit-scrollbar-thumb {
+  @apply bg-notion-border dark:bg-notion-dark-border;
+  @apply rounded-full;
+}
+
+.notion-calendar ::-webkit-scrollbar-thumb:hover {
+  @apply bg-notion-border-dark dark:bg-notion-dark-border-light;
+}
+
+/* Toolbar Override (wenn Custom Toolbar nicht verwendet wird) */
+.notion-calendar .rbc-toolbar {
+  @apply mb-4 flex items-center justify-between;
+  @apply pb-4 border-b border-notion-border dark:border-notion-dark-border;
+}
+
+.notion-calendar .rbc-toolbar button {
+  @apply px-3 py-1.5 text-sm font-medium rounded-notion;
+  @apply transition-all duration-notion;
+  @apply border border-notion-border dark:border-notion-dark-border;
+  @apply hover:bg-notion-bg-hover dark:hover:bg-notion-dark-bg-hover;
+}
+
+.notion-calendar .rbc-toolbar button.rbc-active {
+  @apply bg-notion-blue text-white border-notion-blue;
+  @apply hover:bg-notion-blue-dark;
+}
+
+.notion-calendar .rbc-toolbar-label {
+  @apply text-lg font-semibold;
+}

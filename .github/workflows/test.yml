@@ -1,0 +1,74 @@
+name: Test
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Check code formatting
+      run: npm run format:check
+    
+    - name: Lint code
+      run: npm run lint
+    
+    - name: Type check
+      run: npm run typecheck
+    
+    - name: Setup test database
+      env:
+        DATABASE_URL: postgresql://testuser:testpass@localhost:5432/testdb
+      run: |
+        cd backend
+        npx prisma migrate deploy
+        npx prisma db seed
+    
+    - name: Run tests
+      env:
+        DATABASE_URL: postgresql://testuser:testpass@localhost:5432/testdb
+        JWT_SECRET: test-secret
+        NEXTAUTH_SECRET: test-nextauth-secret
+      run: npm test -- --coverage
+    
+    - name: Upload coverage
+      if: matrix.node-version == '20.x'
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella

@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# 🚫 Prevent duplicate code
+echo "🔍 Checking for duplicate functions..."
+npm run check:duplicates
+
+# 📝 Verify documentation is updated
+echo "📝 Checking if docs need update..."
+npm run check:docs
+
+# 🎨 Format and lint
+echo "🎨 Running formatter and linter..."
+npm run format
+npm run lint
+
+# 🧪 Run tests for changed files
+echo "🧪 Running tests..."
+npm run test:staged
+
+# ✅ Type checking
+echo "✅ Type checking..."
+npm run typecheck
+
+echo "✨ Pre-commit checks passed!"

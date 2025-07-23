@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KI-Beratung Platform - Design System V2 (Optimiert)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Tailwind Config mit optimierten Notion-Farben
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        // Light mode - entsättigte, pastellartige Farben
+                        'notion-bg': '#ffffff',
+                        'notion-bg-secondary': '#fbfbfa',
+                        'notion-bg-hover': '#f7f6f3',
+                        'notion-text': '#37352f',
+                        'notion-text-secondary': '#787774',
+                        'notion-border': '#e9e9e8',
+                        
+                        // Muted accent colors
+                        'notion-blue': '#529cca',
+                        'notion-blue-light': '#e6f3f7',
+                        'notion-blue-dark': '#2383e2',
+                        
+                        'notion-green': '#6ba085',
+                        'notion-green-light': '#f1f8f4',
+                        'notion-green-dark': '#448361',
+                        
+                        'notion-red': '#e07c7c',
+                        'notion-red-light': '#fef1f1',
+                        'notion-red-dark': '#d44c47',
+                        
+                        'notion-yellow': '#dfab01',
+                        'notion-yellow-light': '#fef9ec',
+                        'notion-yellow-dark': '#c09200',
+                        
+                        'notion-purple': '#a47bb3',
+                        'notion-purple-light': '#f3f0f8',
+                        'notion-purple-dark': '#9065b0',
+                        
+                        // Dark mode
+                        'notion-dark-bg': '#191919',
+                        'notion-dark-bg-secondary': '#202020',
+                        'notion-dark-bg-hover': '#2a2a2a',
+                        'notion-dark-text': 'rgba(255, 255, 255, 0.9)',
+                        'notion-dark-text-secondary': 'rgba(255, 255, 255, 0.6)',
+                        'notion-dark-border': 'rgba(255, 255, 255, 0.055)',
+                        
+                        // Dark mode accent colors
+                        'notion-dark-blue': '#6db3d0',
+                        'notion-dark-green': '#7bc796',
+                        'notion-dark-red': '#ff9999',
+                        'notion-dark-yellow': '#ffd644',
+                        'notion-dark-purple': '#b794c6',
+                    },
+                    boxShadow: {
+                        'notion-sm': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                        'notion-md': '0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+                        'notion-lg': '0 8px 16px -4px rgba(0, 0, 0, 0.08), 0 4px 8px -4px rgba(0, 0, 0, 0.06)',
+                        'notion-glow': '0 0 0 1px rgba(82, 156, 202, 0.14), 0 0 0 4px rgba(82, 156, 202, 0.05)',
+                        'notion-dark-md': '0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 2px 4px 0 rgba(0, 0, 0, 0.2)',
+                    },
+                    animation: {
+                        'notion-fade': 'notionFade 0.3s ease-out',
+                        'notion-slide': 'notionSlide 0.3s ease-out',
+                        'notion-scale': 'notionScale 0.15s ease-out',
+                        'notion-bounce': 'notionBounce 0.5s ease-in-out',
+                        'notion-pulse': 'notionPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    fontFamily: {
+                        'notion': 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        /* Animations */
+        @keyframes notionFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes notionSlide {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes notionScale {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.98); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes notionBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        
+        @keyframes notionPulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        }
+        
+        /* Button gradient effects */
+        .notion-button-primary {
+            background: linear-gradient(135deg, #529cca 0%, #4a8fc4 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .notion-button-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(82, 156, 202, 0.3);
+        }
+        
+        .notion-button-primary:active {
+            animation: notionScale 0.15s ease-out;
+        }
+        
+        /* Card gradient overlay */
+        .notion-card-gradient::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(82, 156, 202, 0.03) 0%, rgba(164, 123, 179, 0.03) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            border-radius: 6px;
+        }
+        
+        .notion-card-gradient:hover::before {
+            opacity: 1;
+        }
+        
+        /* Glow effect */
+        .notion-glow:focus {
+            box-shadow: 0 0 0 1px rgba(82, 156, 202, 0.14), 0 0 0 4px rgba(82, 156, 202, 0.05);
+            outline: none;
+        }
+        
+        /* Icon styles */
+        .notion-icon {
+            width: 20px;
+            height: 20px;
+            stroke-width: 1.5;
+        }
+        
+        /* Backdrop blur for modals */
+        .notion-overlay {
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        
+        /* Subtle gradient backgrounds */
+        .notion-gradient-subtle {
+            background: linear-gradient(180deg, rgba(82, 156, 202, 0.02) 0%, rgba(164, 123, 179, 0.02) 100%);
+        }
+        
+        /* Dark mode adjustments */
+        .dark .notion-card-gradient::before {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.04) 100%);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        
+        .dark ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-notion-bg text-notion-text dark:bg-notion-dark-bg dark:text-notion-dark-text transition-colors duration-300">
+    <!-- Theme Toggle -->
+    <div class="fixed top-4 right-4 z-50">
+        <button onclick="toggleTheme()" class="p-2 rounded-md hover:bg-notion-bg-hover dark:hover:bg-notion-dark-bg-hover transition-all duration-300">
+            <svg id="theme-icon-light" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+            <svg id="theme-icon-dark" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header with gradient -->
+        <div class="mb-12 text-center animate-notion-fade notion-gradient-subtle py-12 -mx-4 rounded-lg">
+            <h1 class="text-4xl font-bold mb-4">KI-Beratung Platform Design System</h1>
+            <p class="text-notion-text-secondary dark:text-notion-dark-text-secondary">
+                Optimiertes Notion-inspiriertes Design mit entsättigten Farben und subtilen Effekten
+            </p>
+        </div>
+
+        <!-- Optimized Colors Section -->
+        <section class="mb-12 animate-notion-slide">
+            <h2 class="text-2xl font-semibold mb-6">Optimierte Farbpalette</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <!-- Blue -->
+                <div class="relative overflow-hidden rounded-lg border border-notion-border dark:border-notion-dark-border p-4 hover:shadow-notion-md dark:hover:shadow-notion-dark-md transition-all duration-300 notion-card-gradient">
+                    <div class="w-full h-20 rounded mb-3 bg-gradient-to-br from-notion-blue to-notion-blue-dark"></div>
+                    <p class="text-sm font-medium">Notion Blue</p>
+                    <p class="text-xs text-notion-text-secondary">#529cca</p>
+                </div>
+                
+                <!-- Green -->
+                <div class="relative overflow-hidden rounded-lg border border-notion-border dark:border-notion-dark-border p-4 hover:shadow-notion-md dark:hover:shadow-notion-dark-md transition-all duration-300 notion-card-gradient">
+                    <div class="w-full h-20 rounded mb-3 bg-gradient-to-br from-notion-green to-notion-green-dark"></div>
+                    <p class="text-sm font-medium">Notion Green</p>
+                    <p class="text-xs text-notion-text-secondary">#6ba085</p>
+                </div>
+                
+                <!-- Red -->
+                <div class="relative overflow-hidden rounded-lg border border-notion-border dark:border-notion-dark-border p-4 hover:shadow-notion-md dark:hover:shadow-notion-dark-md transition-all duration-300 notion-card-gradient">
+                    <div class="w-full h-20 rounded mb-3 bg-gradient-to-br from-notion-red to-notion-red-dark"></div>
+                    <p class="text-sm font-medium">Notion Red</p>
+                    <p class="text-xs text-notion-text-secondary">#e07c7c</p>
+                </div>
+                
+                <!-- Yellow -->
+                <div class="relative overflow-hidden rounded-lg border border-notion-border dark:border-notion-dark-border p-4 hover:shadow-notion-md dark:hover:shadow-notion-dark-md transition-all duration-300 notion-card-gradient">
+                    <div class="w-full h-20 rounded mb-3 bg-gradient-to-br from-notion-yellow to-notion-yellow-dark"></div>
+                    <p class="text-sm font-medium">Notion Yellow</p>
+                    <p class="text-xs text-notion-text-secondary">#dfab01</p>
+                </div>
+                
+                <!-- Purple -->
+                <div class="relative overflow-hidden rounded-lg border border-notion-border dark:border-notion-dark-border p-4 hover:shadow-notion-md dark:hover:shadow-notion-dark-md transition-all duration-300 notion-card-gradient">
+                    <div class="w-full h-20 rounded mb-3 bg-gradient-to-br from-notion-purple to-notion-purple-dark"></div>
+                    <p class="text-sm font-medium">Notion Purple</p>
+                    <p class="text-xs text-notion-text-secondary">#a47bb3</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Enhanced Buttons with Gradients -->
+        <section class="mb-12 animate-notion-slide" style="animation-delay: 0.1s">
+            <h2 class="text-2xl font-semibold mb-6">Buttons mit Gradient-Effekten</h2>
+            <div class="bg-white dark:bg-notion-dark-bg-secondary rounded-lg border border-notion-border dark:border-notion-dark-border p-6">
+                <div class="space-y-4">
+                    <!-- Button variations -->
+                    <div class="flex flex-wrap gap-3">
+                        <button class="notion-button-primary px-4 py-2 rounded-md text-white font-medium text-sm active:scale-[0.98] transition-all">
+                            Primary Button
+                        </button>
+                        <button class="px-4 py-2 rounded-md font-medium text-sm bg-notion-bg-secondary hover:bg-notion-bg-hover dark:bg-notion-dark-bg-secondary dark:hover:bg-notion-dark-bg-hover border border-notion-border dark:border-notion-dark-border transition-all duration-300">
+                            Secondary Button
+                        </button>
+                        <button class="px-4 py-2 rounded-md font-medium text-sm hover:bg-gradient-to-r hover:from-black/[0.03] hover:to-black/[0.05] dark:hover:from-white/[0.03] dark:hover:to-white/[0.05] transition-all duration-300">
+                            Ghost Button
+                        </button>
+                        <button class="px-4 py-2 rounded-md text-white font-medium text-sm bg-gradient-to-r from-notion-red to-notion-red-dark hover:shadow-notion-md transition-all duration-300 active:scale-[0.98]">
+                            Danger Button
+                        </button>
+                        <button class="px-4 py-2 rounded-md text-white font-medium text-sm bg-gradient-to-r from-notion-green to-notion-green-dark hover:shadow-notion-md transition-all duration-300 active:scale-[0.98]">
+                            Success Button
+                        </button>
+                    </div>
+                    
+                    <!-- With Icons -->
+                    <div class="flex flex-wrap gap-3">
+                        <button class="notion-button-primary px-4 py-2 rounded-md text-white font-medium text-sm active:scale-[0.98] transition-all inline-flex items-center gap-2">
+                            <svg class="notion-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Mit Icon
+                        </button>
+                        <button class="notion-button-primary px-4 py-2 rounded-md text-white font-medium text-sm active:scale-[0.98] transition-all inline-flex items-center gap-2">
+                            <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            Loading...
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cards with Gradient Overlays -->
+        <section class="mb-12 animate-notion-slide" style="animation-delay: 0.2s">
+            <h2 class="text-2xl font-semibold mb-6">Cards mit Gradient-Overlays</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="relative overflow-hidden bg-white dark:bg-notion-dark-bg-secondary rounded-lg border border-notion-border dark:border-notion-dark-border p-6 hover:shadow-notion-md dark:hover:shadow-notion-dark-md transition-all duration-300 hover:-translate-y-0.5 notion-card-gradient">
+                    <h3 class="font-semibold mb-2 text-lg">Standard Card</h3>
+                    <p class="text-sm text-notion-text-secondary dark:text-notion-dark-text-secondary">
+                        Eine Karte mit subtilem Gradient-Overlay beim Hover und sanftem Lift-Effekt.
+                    </p>
+                </div>
+                
+                <div class="relative overflow-hidden bg-gradient-to-br from-notion-blue-light to-white dark:from-notion-dark-bg-secondary dark:to-notion-dark-bg rounded-lg border border-notion-blue/20 dark:border-notion-dark-blue/20 p-6 hover:shadow-notion-lg transition-all duration-300 hover:-translate-y-0.5">
+                    <h3 class="font-semibold mb-2 text-lg text-notion-blue dark:text-notion-dark-blue">Gradient Card</h3>
+                    <p class="text-sm text-notion-text-secondary dark:text-notion-dark-text-secondary">
+                        Eine Karte mit permanentem Gradient-Hintergrund für besondere Inhalte.
+                    </p>
+                </div>
+                
+                <div class="group relative overflow-hidden bg-white dark:bg-notion-dark-bg-secondary rounded-lg border border-notion-border dark:border-notion-dark-border p-6 hover:border-notion-purple/30 dark:hover:border-notion-dark-purple/30 transition-all duration-300 cursor-pointer">
+                    <div class="absolute inset-0 bg-gradient-to-br from-notion-purple/5 to-notion-blue/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <h3 class="font-semibold mb-2 text-lg relative z-10">Interactive Card</h3>
+                    <p class="text-sm text-notion-text-secondary dark:text-notion-dark-text-secondary relative z-10">
+                        Eine interaktive Karte mit animiertem Gradient beim Hover.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Badges with Soft Colors -->
+        <section class="mb-12 animate-notion-slide" style="animation-delay: 0.3s">
+            <h2 class="text-2xl font-semibold mb-6">Badges mit weichen Farben</h2>
+            <div class="bg-white dark:bg-notion-dark-bg-secondary rounded-lg border border-notion-border dark:border-notion-dark-border p-6">
+                <div class="flex flex-wrap gap-3">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-notion-blue-light text-notion-blue-dark dark:bg-notion-dark-blue/20 dark:text-notion-dark-blue">
+                        Information
+                    </span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-notion-green-light text-notion-green-dark dark:bg-notion-dark-green/20 dark:text-notion-dark-green">
+                        Success
+                    </span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-notion-yellow-light text-notion-yellow-dark dark:bg-notion-dark-yellow/20 dark:text-notion-dark-yellow">
+                        Warning
+                    </span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-notion-red-light text-notion-red-dark dark:bg-notion-dark-red/20 dark:text-notion-dark-red">
+                        Error
+                    </span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-notion-purple-light text-notion-purple-dark dark:bg-notion-dark-purple/20 dark:text-notion-dark-purple">
+                        Special
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-notion-green-light text-notion-green-dark dark:bg-notion-dark-green/20 dark:text-notion-dark-green">
+                        <span class="w-1.5 h-1.5 rounded-full bg-notion-green dark:bg-notion-dark-green animate-notion-pulse"></span>
+                        Active
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Input Fields with Glow Effect -->
+        <section class="mb-12 animate-notion-slide" style="animation-delay: 0.4s">
+            <h2 class="text-2xl font-semibold mb-6">Input Fields mit Glow-Effekt</h2>
+            <div class="bg-white dark:bg-notion-dark-bg-secondary rounded-lg border border-notion-border dark:border-notion-dark-border p-6">
+                <form class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1.5">Text Input mit Glow</label>
+                        <input type="text" placeholder="Fokussieren Sie für Glow-Effekt..." 
+                               class="w-full px-3 py-2 text-sm border border-notion-border dark:border-notion-dark-border rounded-md bg-transparent placeholder-notion-text-secondary dark:placeholder-notion-dark-text-secondary focus:border-transparent transition-all duration-300 notion-glow">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1.5">Select mit Icon</label>
+                            <div class="relative">
+                                <select class="w-full px-3 py-2 pr-8 text-sm border border-notion-border dark:border-notion-dark-border rounded-md bg-transparent focus:border-transparent transition-all duration-300 notion-glow appearance-none">
+                                    <option>Option 1</option>
+                                    <option>Option 2</option>
+                                    <option>Option 3</option>
+                                </select>
+                                <svg class="absolute right-2.5 top-3 w-4 h-4 text-notion-text-secondary pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1.5">Date Input</label>
+                            <input type="date" class="w-full px-3 py-2 text-sm border border-notion-border dark:border-notion-dark-border rounded-md bg-transparent focus:border-transparent transition-all duration-300 notion-glow">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Loading States with Animations -->
+        <section class="mb-12 animate-notion-slide" style="animation-delay: 0.5s">
+            <h2 class="text-2xl font-semibold mb-6">Loading States & Animationen</h2>
+            <div class="bg-white dark:bg-notion-dark-bg-secondary rounded-lg border border-notion-border dark:border-notion-dark-border p-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="text-center">
+                        <div class="inline-flex items-center justify-center w-12 h-12 mb-3">
+                            <div class="w-8 h-8 border-2 border-notion-border dark:border-notion-dark-border border-t-transparent rounded-full animate-spin bg-gradient-to-r from-notion-blue to-notion-purple"></div>
+                        </div>
+                        <p class="text-sm">Gradient Spinner</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="inline-flex items-center gap-1 mb-3">
+                            <span class="w-2 h-2 bg-notion-blue rounded-full animate-notion-bounce"></span>
+                            <span class="w-2 h-2 bg-notion-purple rounded-full animate-notion-bounce" style="animation-delay: 0.1s"></span>
+                            <span class="w-2 h-2 bg-notion-green rounded-full animate-notion-bounce" style="animation-delay: 0.2s"></span>
+                        </div>
+                        <p class="text-sm">Bounce Dots</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-full h-1 bg-notion-bg-hover dark:bg-notion-dark-bg-hover rounded-full mb-3 overflow-hidden">
+                            <div class="h-full w-1/2 bg-gradient-to-r from-notion-blue via-notion-purple to-notion-blue bg-[length:200%_100%] animate-[shimmer_2s_ease-in-out_infinite] rounded-full"></div>
+                        </div>
+                        <p class="text-sm">Progress Bar</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="inline-block px-3 py-1.5 bg-notion-bg-hover dark:bg-notion-dark-bg-hover rounded-md animate-notion-pulse mb-3">
+                            <span class="text-sm">Loading...</span>
+                        </div>
+                        <p class="text-sm">Pulse Effect</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hover Effects Gallery -->
+        <section class="mb-12 animate-notion-slide" style="animation-delay: 0.6s">
+            <h2 class="text-2xl font-semibold mb-6">Hover-Effekte Galerie</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="group p-6 rounded-lg border border-notion-border dark:border-notion-dark-border transition-all duration-300 hover:-translate-y-0.5 hover:shadow-notion-lg cursor-pointer">
+                    <div class="w-12 h-12 bg-gradient-to-br from-notion-blue to-notion-purple rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300"></div>
+                    <h3 class="font-medium mb-2">Lift & Scale</h3>
+                    <p class="text-sm text-notion-text-secondary dark:text-notion-dark-text-secondary">
+                        Kombiniert Lift und Scale für dynamische Interaktion
+                    </p>
+                </div>
+                
+                <div class="group p-6 rounded-lg border border-notion-border dark:border-notion-dark-border transition-all duration-300 hover:shadow-notion-glow cursor-pointer">
+                    <div class="w-12 h-12 bg-gradient-to-br from-notion-green to-notion-blue rounded-lg mb-4 group-hover:rotate-6 transition-transform duration-300"></div>
+                    <h3 class="font-medium mb-2">Glow & Rotate</h3>
+                    <p class="text-sm text-notion-text-secondary dark:text-notion-dark-text-secondary">
+                        Subtiler Glow-Effekt mit leichter Rotation
+                    </p>
+                </div>
+                
+                <div class="group p-6 rounded-lg border border-notion-border dark:border-notion-dark-border transition-all duration-300 hover:border-notion-purple/50 dark:hover:border-notion-dark-purple/50 cursor-pointer overflow-hidden relative">
+                    <div class="absolute inset-0 bg-gradient-to-br from-notion-purple/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="w-12 h-12 bg-gradient-to-br from-notion-purple to-notion-red rounded-lg mb-4 relative z-10"></div>
+                    <h3 class="font-medium mb-2 relative z-10">Border & Overlay</h3>
+                    <p class="text-sm text-notion-text-secondary dark:text-notion-dark-text-secondary relative z-10">
+                        Animierte Border mit Gradient-Overlay
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Icons Demo -->
+        <section class="mb-12 animate-notion-slide" style="animation-delay: 0.7s">
+            <h2 class="text-2xl font-semibold mb-6">Icons im Notion-Stil</h2>
+            <div class="bg-white dark:bg-notion-dark-bg-secondary rounded-lg border border-notion-border dark:border-notion-dark-border p-6">
+                <div class="grid grid-cols-4 md:grid-cols-8 gap-4">
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="p-2 rounded-lg hover:bg-notion-bg-hover dark:hover:bg-notion-dark-bg-hover transition-colors">
+                            <svg class="notion-icon text-notion-text-secondary dark:text-notion-dark-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                            </svg>
+                        </div>
+                        <span class="text-xs">Home</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="p-2 rounded-lg hover:bg-notion-bg-hover dark:hover:bg-notion-dark-bg-hover transition-colors">
+                            <svg class="notion-icon text-notion-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                        </div>
+                        <span class="text-xs">Tasks</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="p-2 rounded-lg hover:bg-notion-bg-hover dark:hover:bg-notion-dark-bg-hover transition-colors">
+                            <svg class="notion-icon text-notion-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <span class="text-xs">Success</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="p-2 rounded-lg hover:bg-notion-bg-hover dark:hover:bg-notion-dark-bg-hover transition-colors">
+                            <svg class="notion-icon text-notion-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                            </svg>
+                        </div>
+                        <span class="text-xs">Learn</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="p-2 rounded-lg hover:bg-notion-bg-hover dark:hover:bg-notion-dark-bg-hover transition-colors">
+                            <svg class="notion-icon text-notion-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <span class="text-xs">Time</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="p-2 rounded-lg hover:bg-notion-bg-hover dark:hover:bg-notion-dark-bg-hover transition-colors">
+                            <svg class="notion-icon text-notion-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                        </div>
+                        <span class="text-xs">Alert</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="p-2 rounded-lg hover:bg-notion-bg-hover dark:hover:bg-notion-dark-bg-hover transition-colors">
+                            <svg class="notion-icon text-notion-text-secondary dark:text-notion-dark-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </div>
+                        <span class="text-xs">Settings</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="p-2 rounded-lg hover:bg-notion-bg-hover dark:hover:bg-notion-dark-bg-hover transition-colors">
+                            <svg class="notion-icon text-notion-text-secondary dark:text-notion-dark-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <span class="text-xs">Info</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Theme Toggle Function with smooth transition
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            
+            // Save preference
+            const isDark = html.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        // Initialize theme from localStorage
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Shimmer animation for progress bar
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shimmer {
+                0% { background-position: 200% 0; }
+                100% { background-position: -200% 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
