@@ -1,4 +1,96 @@
-# API Endpoints - REST API Dokumentation
+# API Endpoints Documentation
+
+## Authentication Endpoints
+
+### POST /api/auth/register
+**Description:** User registration endpoint
+
+**Request Body:**
+```json
+{
+  "name": "string (min 2 chars)",
+  "email": "string (valid email)",
+  "password": "string (min 8 chars, contains uppercase, lowercase, number)",
+  "companyName": "string (optional)",
+  "companySize": "enum (optional): freelancer|startup|small|medium|large",
+  "industry": "string (optional)"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Benutzer erfolgreich erstellt",
+  "user": {
+    "id": "uuid",
+    "email": "string",
+    "name": "string",
+    "companyName": "string",
+    "companySize": "enum",
+    "industry": "string",
+    "role": "user",
+    "locale": "de",
+    "timezone": "Europe/Berlin",
+    "emailVerified": false,
+    "onboardingCompleted": false,
+    "createdAt": "timestamp",
+    "updatedAt": "timestamp"
+  }
+}
+```
+
+**Error Responses:**
+- 400: Validation error or user already exists
+- 500: Internal server error
+
+### GET|POST /api/auth/[...nextauth]
+**Description:** NextAuth.js authentication endpoints
+
+**Supported Providers:**
+- Credentials (email/password)
+- Google OAuth
+
+**Automatic Redirects:**
+- Success: `/dashboard`
+- Error: `/auth/error`
+
+## Protected Routes
+
+### Middleware Protection
+The following routes require authentication:
+- `/dashboard/*`
+- `/projects/*`
+- `/assessment/*`
+- `/admin/*`
+
+### Public Routes
+- `/auth/login`
+- `/auth/register`
+- `/auth/error`
+- `/` (landing page)
+
+## Session Management
+
+### Session Structure
+```json
+{
+  "user": {
+    "id": "string",
+    "email": "string",
+    "name": "string",
+    "image": "string",
+    "role": "user|advisor|admin"
+  },
+  "expires": "timestamp"
+}
+```
+
+### Authentication Flow
+1. User submits credentials via login form
+2. NextAuth validates against Prisma database
+3. JWT token created with user info
+4. Middleware protects routes based on token
+5. Logout clears session and redirects to home
 
 ## Übersicht
 RESTful API für die KI-Beratungsplattform. Alle Endpoints folgen REST-Konventionen und verwenden JSON für Request/Response.
