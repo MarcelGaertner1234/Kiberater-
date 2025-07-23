@@ -44,7 +44,7 @@ async function main() {
     data: {
       userId: testUser.id,
       type: 'quick',
-      responses: JSON.stringify({
+      responses: {
         questions: [
           {
             id: 'q1',
@@ -61,14 +61,14 @@ async function main() {
         ],
         completion_time_seconds: 240,
         version: '1.0'
-      }),
+      },
       score: 65,
       maturityLevel: 'beginner',
-      recommendations: JSON.stringify([
+      recommendations: [
         'KI-Strategie entwickeln',
         'Mitarbeiter schulen',
         'Pilotprojekt starten'
-      ]),
+      ],
       completedAt: new Date()
     }
   })
@@ -82,7 +82,7 @@ async function main() {
       assessmentId: sampleAssessment.id,
       title: 'KI-Transformation Roadmap',
       description: 'Schrittweise Einführung von KI-Technologien',
-      milestones: JSON.stringify({
+      milestones: {
         milestones: [
           {
             id: 'm1',
@@ -101,7 +101,7 @@ async function main() {
             tasks: ['Stellenausschreibungen', 'Schulungsplan']
           }
         ]
-      }),
+      },
       estimatedDurationWeeks: 12,
       status: 'active'
     }
@@ -118,8 +118,8 @@ async function main() {
       description: 'Entwicklung eines einfachen Kundenservice-Chatbots',
       status: 'planning',
       priority: 'high',
-      startDate: '2024-02-01',
-      dueDate: '2024-05-01'
+      startDate: new Date('2024-02-01'),
+      dueDate: new Date('2024-05-01')
     }
   })
 
