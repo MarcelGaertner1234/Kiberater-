@@ -75,8 +75,8 @@ export default function AssessmentResultsPage() {
     }))
 
     // Determine strengths and improvements
-    const strengths = []
-    const improvements = []
+    const strengths: string[] = []
+    const improvements: string[] = []
 
     Object.entries(data.step3.answers).forEach(([key, value]) => {
       if (typeof value === 'number') {

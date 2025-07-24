@@ -14,7 +14,7 @@ import {
   CheckCircle,
   Filter,
   Search,
-  Grid3X3,
+  Grid,
   List,
 } from 'lucide-react'
 
@@ -244,7 +244,7 @@ export default function ProjectsPage() {
                   : 'text-notion-text-secondary hover:bg-notion-bg-hover dark:hover:bg-notion-dark-bg-hover'
               }`}
             >
-              <Grid3X3 className="w-4 h-4" />
+              <Grid className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode('list')}

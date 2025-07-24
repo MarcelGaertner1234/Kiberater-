@@ -21,15 +21,26 @@ export function useNotionStyles() {
       cn(notionStyles.page.base, variant && notionStyles.page[variant]),
 
     // Cards
-    card: (options?: { 
-      clickable?: boolean
-      padding?: 'sm' | 'md' | 'lg'
-      className?: string 
-    }) => cn(
-      notionStyles.card.base,
-      options?.clickable && notionStyles.card.clickable,
-      options?.padding && notionStyles.card.padded[options.padding],
-      options?.className
+    card: Object.assign(
+      (options?: { 
+        clickable?: boolean
+        padding?: 'sm' | 'md' | 'lg'
+        className?: string 
+      }) => cn(
+        notionStyles.card.base,
+        options?.clickable && notionStyles.card.clickable,
+        options?.padding && notionStyles.card.padded[options.padding],
+        options?.className
+      ),
+      {
+        base: notionStyles.card.base,
+        clickable: notionStyles.card.clickable,
+        gradient: notionStyles.card.gradient,
+        header: notionStyles.card.header,
+        title: notionStyles.card.title,
+        description: notionStyles.card.description,
+        padded: notionStyles.card.padded,
+      }
     ),
 
     // Buttons
@@ -47,20 +58,44 @@ export function useNotionStyles() {
     ),
 
     // Form inputs
-    input: (options?: {
-      error?: boolean
-      disabled?: boolean
-      className?: string
-    }) => cn(
-      notionStyles.input.base,
-      options?.error && notionStyles.input.error,
-      options?.disabled && notionStyles.input.disabled,
-      options?.className
+    input: Object.assign(
+      (options?: {
+        error?: boolean
+        disabled?: boolean
+        className?: string
+      }) => cn(
+        notionStyles.input.base,
+        options?.error && notionStyles.input.error,
+        options?.disabled && notionStyles.input.disabled,
+        options?.className
+      ),
+      {
+        base: notionStyles.input.base,
+        error: notionStyles.input.error,
+        disabled: notionStyles.input.disabled,
+        label: notionStyles.input.label,
+        helper: notionStyles.input.helper,
+        errorText: notionStyles.input.errorText,
+      }
     ),
 
     // Typography
-    text: (variant: keyof typeof notionStyles.text, className?: string) =>
-      cn(notionStyles.text[variant], className),
+    text: Object.assign(
+      (variant: keyof typeof notionStyles.text, className?: string) =>
+        cn(notionStyles.text[variant], className),
+      {
+        h1: notionStyles.text.h1,
+        h2: notionStyles.text.h2,
+        h3: notionStyles.text.h3,
+        h4: notionStyles.text.h4,
+        lead: notionStyles.text.lead,
+        body: notionStyles.text.body,
+        small: notionStyles.text.small,
+        muted: notionStyles.text.muted,
+        error: notionStyles.text.error,
+        success: notionStyles.text.success,
+      }
+    ),
 
     // Sidebar
     sidebar: {
@@ -72,6 +107,7 @@ export function useNotionStyles() {
       ),
       icon: notionStyles.sidebar.icon,
       divider: notionStyles.sidebar.divider,
+      section: notionStyles.sidebar.section,
     },
 
     // Table
@@ -88,6 +124,12 @@ export function useNotionStyles() {
       notionStyles.badge.base,
       notionStyles.badge[variant || 'default']
     ),
+
+    // Checkbox
+    checkbox: {
+      base: notionStyles.checkbox.base,
+      label: notionStyles.checkbox.label,
+    },
 
     // Loading
     loading: {

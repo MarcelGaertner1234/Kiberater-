@@ -13,26 +13,13 @@ export type { NotionCalendarProps } from './calendar/NotionCalendar'
 export { NotionDatePicker } from './date-picker/NotionDatePicker'
 export type { NotionDatePickerProps } from './date-picker/NotionDatePicker'
 
-// Editor Components
-export { NotionEditor } from './editor/NotionEditor'
-export type { NotionEditorProps } from './editor/NotionEditor'
-
 // Chart Components
 export { NotionChart } from './charts/NotionChart'
 export type { NotionChartProps } from './charts/NotionChart'
 
-// Kanban Components
-export { NotionKanban } from './kanban/NotionKanban'
-export type { NotionKanbanProps } from './kanban/NotionKanban'
-
-// Table Components
-export { NotionTable } from './data-table/NotionTable'
-export type { NotionTableProps } from './data-table/NotionTable'
-
-// File Upload Components
-export { NotionUpload } from './file-upload/NotionUpload'
-export type { NotionUploadProps } from './file-upload/NotionUpload'
-
-// Video Player Components
-export { NotionVideo } from './video-player/NotionVideo'
-export type { NotionVideoProps } from './video-player/NotionVideo'
+// Note: The following components are planned but not yet implemented:
+// - NotionEditor (editor/NotionEditor) - Rich text editor with TipTap
+// - NotionKanban (kanban/NotionKanban) - Drag & drop kanban board
+// - NotionTable (data-table/NotionTable) - Advanced data tables
+// - NotionUpload (file-upload/NotionUpload) - File upload with drag & drop
+// - NotionVideo (video-player/NotionVideo) - Video player component

@@ -158,7 +158,7 @@ export default function ChatPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-notion-text-secondary">Antwortzeit:</span>
-                <span className="font-medium text-notion-green">< 2 Stunden</span>
+                <span className="font-medium text-notion-green">&lt; 2 Stunden</span>
               </div>
             </div>
           </NotionCard>
