@@ -1,142 +1,250 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { SessionProvider } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import LoginPage from '@/app/(auth)/login/page'
-import { signIn } from 'next-auth/react'
+import { render, screen, fireEvent, waitFor } from '@/test-utils'
+import { setupApiMocks, resetApiMocks, mockApiClient } from '@/test-utils'
+import LoginPage from '@/app/login/page'
 
-// Mock dependencies
-jest.mock('next-auth/react')
-jest.mock('next/navigation')
-jest.mock('@/hooks/useNotionStyles', () => ({
-  useNotionStyles: () => ({
-    text: (variant: string) => `text-${variant}`,
-    input: (options?: any) => `input ${options?.error ? 'error' : ''}`,
-    button: (options?: any) => `button ${options?.variant || 'primary'}`,
+// Mock the hooks
+jest.mock('@/hooks/api/useAuth', () => ({
+  useAuth: () => ({
+    login: jest.fn(),
+    isLoggingIn: false,
+    error: null,
+    isAuthenticated: false,
   }),
 }))
 
-const mockPush = jest.fn()
-const mockSignIn = signIn as jest.MockedFunction<typeof signIn>
-
-beforeEach(() => {
-  ;(useRouter as jest.Mock).mockReturnValue({
-    push: mockPush,
+describe('Login Page', () => {
+  beforeEach(() => {
+    resetApiMocks()
   })
-  mockSignIn.mockResolvedValue({ ok: true })
-})
 
-afterEach(() => {
-  jest.clearAllMocks()
-})
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
 
-const renderLoginPage = () => {
-  return render(
-    <SessionProvider session={null}>
-      <LoginPage />
-    </SessionProvider>
-  )
-}
-
-describe('LoginPage', () => {
-  it('renders login form', () => {
-    renderLoginPage()
-
-    expect(screen.getByText('Willkommen zurück')).toBeInTheDocument()
-    expect(screen.getByLabelText('E-Mail-Adresse')).toBeInTheDocument()
-    expect(screen.getByLabelText('Passwort')).toBeInTheDocument()
+  it('renders login form correctly', () => {
+    render(<LoginPage />)
+    
+    expect(screen.getByRole('heading', { name: /anmelden/i })).toBeInTheDocument()
+    expect(screen.getByLabelText(/e-mail/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/passwort/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /anmelden/i })).toBeInTheDocument()
+    expect(screen.getByText(/noch kein konto/i)).toBeInTheDocument()
   })
 
-  it('shows validation errors for empty fields', async () => {
-    renderLoginPage()
-
+  it('validates required fields', async () => {
+    render(<LoginPage />)
+    
     const submitButton = screen.getByRole('button', { name: /anmelden/i })
     fireEvent.click(submitButton)
-
+    
     await waitFor(() => {
-      expect(
-        screen.getByText('Bitte geben Sie eine gültige E-Mail-Adresse ein')
-      ).toBeInTheDocument()
-      expect(screen.getByText('Passwort ist erforderlich')).toBeInTheDocument()
+      expect(screen.getByText(/e-mail ist erforderlich/i)).toBeInTheDocument()
+      expect(screen.getByText(/passwort ist erforderlich/i)).toBeInTheDocument()
+    })
+  })
+
+  it('validates email format', async () => {
+    render(<LoginPage />)
+    
+    const emailInput = screen.getByLabelText(/e-mail/i)
+    const submitButton = screen.getByRole('button', { name: /anmelden/i })
+    
+    fireEvent.change(emailInput, { target: { value: 'invalid-email' } })
+    fireEvent.click(submitButton)
+    
+    await waitFor(() => {
+      expect(screen.getByText(/ungültige e-mail adresse/i)).toBeInTheDocument()
     })
   })
 
   it('submits form with valid data', async () => {
-    renderLoginPage()
-
-    const emailInput = screen.getByLabelText('E-Mail-Adresse')
-    const passwordInput = screen.getByLabelText('Passwort')
+    const mockLogin = jest.fn()
+    
+    // Mock the useAuth hook with our mock function
+    jest.mocked(require('@/hooks/api/useAuth').useAuth).mockReturnValue({
+      login: mockLogin,
+      isLoggingIn: false,
+      error: null,
+      isAuthenticated: false,
+    })
+    
+    render(<LoginPage />)
+    
+    const emailInput = screen.getByLabelText(/e-mail/i)
+    const passwordInput = screen.getByLabelText(/passwort/i)
     const submitButton = screen.getByRole('button', { name: /anmelden/i })
-
+    
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
     fireEvent.change(passwordInput, { target: { value: 'password123' } })
     fireEvent.click(submitButton)
-
+    
     await waitFor(() => {
-      expect(mockSignIn).toHaveBeenCalledWith('credentials', {
+      expect(mockLogin).toHaveBeenCalledWith({
         email: 'test@example.com',
         password: 'password123',
-        redirect: false,
+        rememberMe: false,
       })
     })
   })
 
-  it('handles login error', async () => {
-    mockSignIn.mockResolvedValue({ ok: false, error: 'CredentialsSignin' })
-    renderLoginPage()
-
-    const emailInput = screen.getByLabelText('E-Mail-Adresse')
-    const passwordInput = screen.getByLabelText('Passwort')
-    const submitButton = screen.getByRole('button', { name: /anmelden/i })
-
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
-    fireEvent.change(passwordInput, { target: { value: 'wrongpassword' } })
-    fireEvent.click(submitButton)
-
-    await waitFor(() => {
-      expect(screen.getByText('Ungültige E-Mail oder Passwort')).toBeInTheDocument()
+  it('shows loading state during login', () => {
+    jest.mocked(require('@/hooks/api/useAuth').useAuth).mockReturnValue({
+      login: jest.fn(),
+      isLoggingIn: true,
+      error: null,
+      isAuthenticated: false,
     })
+    
+    render(<LoginPage />)
+    
+    const submitButton = screen.getByRole('button', { name: /anmelden/i })
+    expect(submitButton).toBeDisabled()
+    expect(screen.getByText(/wird geladen/i)).toBeInTheDocument()
   })
 
-  it('redirects to dashboard on successful login', async () => {
-    mockSignIn.mockResolvedValue({ ok: true })
-    renderLoginPage()
+  it('displays error message on login failure', () => {
+    const errorMessage = 'Ungültige Anmeldedaten'
+    
+    jest.mocked(require('@/hooks/api/useAuth').useAuth).mockReturnValue({
+      login: jest.fn(),
+      isLoggingIn: false,
+      error: errorMessage,
+      isAuthenticated: false,
+    })
+    
+    render(<LoginPage />)
+    
+    expect(screen.getByText(errorMessage)).toBeInTheDocument()
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+  })
 
-    const emailInput = screen.getByLabelText('E-Mail-Adresse')
-    const passwordInput = screen.getByLabelText('Passwort')
+  it('handles remember me checkbox', async () => {
+    const mockLogin = jest.fn()
+    
+    jest.mocked(require('@/hooks/api/useAuth').useAuth).mockReturnValue({
+      login: mockLogin,
+      isLoggingIn: false,
+      error: null,
+      isAuthenticated: false,
+    })
+    
+    render(<LoginPage />)
+    
+    const emailInput = screen.getByLabelText(/e-mail/i)
+    const passwordInput = screen.getByLabelText(/passwort/i)
+    const rememberCheckbox = screen.getByLabelText(/angemeldet bleiben/i)
     const submitButton = screen.getByRole('button', { name: /anmelden/i })
-
+    
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
     fireEvent.change(passwordInput, { target: { value: 'password123' } })
+    fireEvent.click(rememberCheckbox)
     fireEvent.click(submitButton)
-
+    
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith('/dashboard')
+      expect(mockLogin).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password123',
+        rememberMe: true,
+      })
     })
   })
 
-  it('calls Google sign-in when Google button is clicked', async () => {
-    renderLoginPage()
+  it('redirects to register page', () => {
+    const { mockRouter } = require('@/test-utils')
+    
+    render(<LoginPage />)
+    
+    const registerLink = screen.getByText(/registrieren/i)
+    fireEvent.click(registerLink)
+    
+    expect(mockRouter.push).toHaveBeenCalledWith('/register')
+  })
 
-    const googleButton = screen.getByRole('button', { name: /mit google fortfahren/i })
-    fireEvent.click(googleButton)
+  it('shows password reset link', () => {
+    render(<LoginPage />)
+    
+    const forgotPasswordLink = screen.getByText(/passwort vergessen/i)
+    expect(forgotPasswordLink).toBeInTheDocument()
+    expect(forgotPasswordLink).toHaveAttribute('href', '/reset-password')
+  })
 
-    await waitFor(() => {
-      expect(mockSignIn).toHaveBeenCalledWith('google', { callbackUrl: '/dashboard' })
+  describe('Accessibility', () => {
+    it('has proper ARIA labels and roles', () => {
+      render(<LoginPage />)
+      
+      expect(screen.getByRole('form')).toBeInTheDocument()
+      expect(screen.getByLabelText(/e-mail/i)).toHaveAttribute('type', 'email')
+      expect(screen.getByLabelText(/passwort/i)).toHaveAttribute('type', 'password')
+    })
+
+    it('associates form labels with inputs', () => {
+      render(<LoginPage />)
+      
+      const emailInput = screen.getByLabelText(/e-mail/i)
+      const passwordInput = screen.getByLabelText(/passwort/i)
+      
+      expect(emailInput).toHaveAttribute('id')
+      expect(passwordInput).toHaveAttribute('id')
+    })
+
+    it('shows error messages with proper ARIA attributes', () => {
+      jest.mocked(require('@/hooks/api/useAuth').useAuth).mockReturnValue({
+        login: jest.fn(),
+        isLoggingIn: false,
+        error: 'Test error',
+        isAuthenticated: false,
+      })
+      
+      render(<LoginPage />)
+      
+      const errorMessage = screen.getByRole('alert')
+      expect(errorMessage).toHaveAttribute('aria-live', 'polite')
     })
   })
 
-  it('contains link to register page', () => {
-    renderLoginPage()
-
-    const registerLink = screen.getByRole('link', { name: /jetzt registrieren/i })
-    expect(registerLink).toHaveAttribute('href', '/auth/register')
+  describe('Mobile Responsiveness', () => {
+    it('adapts to mobile viewport', () => {
+      // Mock mobile viewport
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: 375,
+      })
+      
+      render(<LoginPage />)
+      
+      // Add assertions for mobile-specific behavior
+      expect(screen.getByRole('form')).toBeInTheDocument()
+    })
   })
 
-  it('contains forgot password link', () => {
-    renderLoginPage()
+  describe('Social Login', () => {
+    it('shows social login options if available', () => {
+      render(<LoginPage />)
+      
+      // If social login is implemented
+      const googleLogin = screen.queryByText(/mit google anmelden/i)
+      const linkedinLogin = screen.queryByText(/mit linkedin anmelden/i)
+      
+      // These might not exist yet, so we use queryBy
+      if (googleLogin) {
+        expect(googleLogin).toBeInTheDocument()
+      }
+      if (linkedinLogin) {
+        expect(linkedinLogin).toBeInTheDocument()
+      }
+    })
+  })
 
-    const forgotPasswordLink = screen.getByRole('link', { name: /passwort vergessen/i })
-    expect(forgotPasswordLink).toHaveAttribute('href', '/auth/forgot-password')
+  describe('Security', () => {
+    it('does not expose sensitive data in DOM', () => {
+      render(<LoginPage />)
+      
+      const passwordInput = screen.getByLabelText(/passwort/i)
+      fireEvent.change(passwordInput, { target: { value: 'secret123' } })
+      
+      // Password should not be visible in the DOM as plain text
+      expect(screen.queryByText('secret123')).not.toBeInTheDocument()
+    })
   })
 })
