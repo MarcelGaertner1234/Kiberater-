@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('http://localhost:3000'),
   title: 'KI-Beratung - Ihre KI erfolgreich integrieren',
   description:
     'Personalisierte KI-Beratung für Unternehmen. Von der Analyse bis zur Umsetzung - wir begleiten Sie auf Ihrer KI-Reise.',
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
     description: 'Personalisierte KI-Beratung für Unternehmen',
     images: [
       {
-        url: 'https://ki-beratung.de/og-image.png',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'KI-Beratung',
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'KI-Beratung - Ihre KI erfolgreich integrieren',
     description: 'Personalisierte KI-Beratung für Unternehmen',
-    images: ['https://ki-beratung.de/twitter-image.png'],
+    images: ['/twitter-image.png'],
   },
   robots: {
     index: true,

@@ -10,11 +10,13 @@ import { logger } from '../../utils/logger'
 const router = Router()
 const prisma = new PrismaClient()
 
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+// Initialize Supabase client - disabled until correct URL is available
+const supabase = process.env.SUPABASE_URL && process.env.SUPABASE_URL !== 'https://cbjghsuleyvsqmugask.supabase.co' 
+  ? createClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+  : null
 
 // Validation schemas
 const registerSchema = z.object({
@@ -100,25 +102,27 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
       }
     })
     
-    // Create user in Supabase Auth
-    try {
-      const { data: supabaseUser, error } = await supabase.auth.admin.createUser({
-        email: validatedData.email,
-        password: validatedData.password,
-        email_confirm: true,
-        user_metadata: {
-          name: validatedData.name,
-          prisma_user_id: user.id,
+    // Create user in Supabase Auth (optional)
+    if (supabase) {
+      try {
+        const { error } = await supabase.auth.admin.createUser({
+          email: validatedData.email,
+          password: validatedData.password,
+          email_confirm: true,
+          user_metadata: {
+            name: validatedData.name,
+            prisma_user_id: user.id,
+          }
+        })
+        
+        if (error) {
+          logger.warn('Supabase user creation failed:', error)
+          // Continue without Supabase for now
         }
-      })
-      
-      if (error) {
-        logger.error('Supabase user creation failed:', error)
+      } catch (supabaseError) {
+        logger.warn('Supabase connection error:', supabaseError)
         // Continue without Supabase for now
       }
-    } catch (supabaseError) {
-      logger.error('Supabase connection error:', supabaseError)
-      // Continue without Supabase for now
     }
     
     // Generate tokens
@@ -381,8 +385,8 @@ router.post('/forgot-password', async (req: Request, res: Response, next: NextFu
     })
     
     if (user) {
-      // Generate reset token
-      const resetToken = jwt.sign(
+      // Generate reset token - will be used when email sending is implemented
+      jwt.sign(
         { userId: user.id, type: 'password_reset' },
         process.env.JWT_SECRET!,
         { expiresIn: '1h' }

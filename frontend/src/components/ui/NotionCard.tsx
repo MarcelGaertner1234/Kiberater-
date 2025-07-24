@@ -1,5 +1,4 @@
 import { cn } from '@/lib/design-system'
-import { useNotionStyles } from '@/hooks/useNotionStyles'
 
 interface NotionCardProps {
   children: React.ReactNode
@@ -22,13 +21,17 @@ export function NotionCard({
   className,
   onClick,
 }: NotionCardProps) {
-  const styles = useNotionStyles()
+  const paddingClasses = {
+    sm: 'p-4',
+    md: 'p-6',
+    lg: 'p-8'
+  }
 
   const cardClasses = cn(
-    styles.card.base,
-    clickable && styles.card.clickable,
-    gradient && styles.card.gradient,
-    styles.card.padded[padding],
+    'bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700',
+    clickable && 'cursor-pointer hover:shadow-lg transition-shadow',
+    gradient && 'bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20',
+    paddingClasses[padding],
     className
   )
 
@@ -40,9 +43,9 @@ export function NotionCard({
       tabIndex={clickable ? 0 : undefined}
     >
       {(title || description) && (
-        <div className={styles.card.header}>
-          {title && <h3 className={styles.card.title}>{title}</h3>}
-          {description && <p className={styles.card.description}>{description}</p>}
+        <div className="mb-4">
+          {title && <h3 className="text-lg font-semibold mb-1">{title}</h3>}
+          {description && <p className="text-gray-600 dark:text-gray-300">{description}</p>}
         </div>
       )}
       {children}

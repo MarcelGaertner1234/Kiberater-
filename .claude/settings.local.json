@@ -12,7 +12,23 @@
       "Bash(wc:*)",
       "Bash(mkdir:*)",
       "Bash(touch:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(cp:*)",
+      "Bash(chmod:*)",
+      "Bash(node:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(npm run:*)",
+      "Bash(npx prisma:*)",
+      "Bash(mv:*)",
+      "Bash(rm:*)",
+      "Bash(/Users/marcelgaertner/ki-beratung-platform/test-servers.sh:*)",
+      "Bash(curl:*)",
+      "Bash(kill:*)",
+      "Bash(./improved-continuous-test.sh:*)",
+      "Bash(./check-servers.sh:*)",
+      "Bash(./new-comprehensive-test.sh:*)"
     ],
     "deny": []
   }

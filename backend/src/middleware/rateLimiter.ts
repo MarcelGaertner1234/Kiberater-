@@ -1,19 +1,5 @@
 import rateLimit from 'express-rate-limit'
-import RedisStore from 'rate-limit-redis'
-import { createClient } from 'redis'
 import { ApiError } from '../utils/ApiError'
-
-// Create Redis client
-const redisClient = createClient({
-  url: process.env.REDIS_URL || 'redis://localhost:6379',
-})
-
-redisClient.on('error', (err) => {
-  console.error('Redis Client Error:', err)
-})
-
-// Connect to Redis
-redisClient.connect().catch(console.error)
 
 // Create different rate limiters for different endpoints
 export const rateLimiter = rateLimit({
@@ -22,19 +8,14 @@ export const rateLimiter = rateLimit({
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  handler: (req, res) => {
-    throw new ApiError(429, 'Too many requests', {
-      retryAfter: req.rateLimit?.resetTime,
-    })
+  handler: (_req, _res) => {
+    throw new ApiError(429, 'Too many requests')
   },
   skip: (req) => {
     // Skip rate limiting for authenticated premium users
-    return req.user?.role === 'admin' || req.user?.subscription?.plan === 'enterprise'
+    const authReq = req as any
+    return authReq.user?.role === 'admin'
   },
-  store: new RedisStore({
-    client: redisClient,
-    prefix: 'rl:general:',
-  }),
 })
 
 // Stricter rate limiter for auth endpoints
@@ -45,15 +26,9 @@ export const authRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skipSuccessfulRequests: true, // Don't count successful requests
-  handler: (req, res) => {
-    throw new ApiError(429, 'Too many authentication attempts', {
-      retryAfter: req.rateLimit?.resetTime,
-    })
+  handler: (_req, _res) => {
+    throw new ApiError(429, 'Too many authentication attempts')
   },
-  store: new RedisStore({
-    client: redisClient,
-    prefix: 'rl:auth:',
-  }),
 })
 
 // API key rate limiter (higher limits)
@@ -62,15 +37,9 @@ export const apiKeyRateLimiter = rateLimit({
   max: 500, // Limit each API key to 500 requests per minute
   keyGenerator: (req) => {
     // Use API key as identifier instead of IP
-    return req.headers['x-api-key'] as string || req.ip
+    return (req.headers['x-api-key'] as string) || req.ip || 'anonymous'
   },
-  handler: (req, res) => {
-    throw new ApiError(429, 'API rate limit exceeded', {
-      retryAfter: req.rateLimit?.resetTime,
-    })
+  handler: (_req, _res) => {
+    throw new ApiError(429, 'API rate limit exceeded')
   },
-  store: new RedisStore({
-    client: redisClient,
-    prefix: 'rl:api:',
-  }),
 })

@@ -94,7 +94,7 @@ const sidebarSections = [
   },
 ]
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const styles = useNotionStyles()
 
   return (
@@ -104,7 +104,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         className="w-64 border-r border-notion-border dark:border-notion-dark-border"
       />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <AuthHeader />
+        <DashboardHeader />
         <main className="flex-1 overflow-y-auto bg-notion-bg dark:bg-notion-dark-bg">
           <div className="container mx-auto px-4 py-6 md:px-6">{children}</div>
         </main>
@@ -113,14 +113,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   )
 }
 
-function AuthHeader() {
+function DashboardHeader() {
   const styles = useNotionStyles()
 
   return (
-    <header className={styles.topbar.base}>
-      <div className={styles.topbar.content}>
+    <header className="h-16 border-b border-notion-border dark:border-notion-dark-border bg-white dark:bg-notion-dark-bg">
+      <div className="h-full px-6 flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <h1 className={styles.topbar.title}>KI-Beratung Platform</h1>
+          <h1 className="text-xl font-semibold">KI-Beratung Platform</h1>
         </div>
 
         <div className="flex items-center space-x-4">

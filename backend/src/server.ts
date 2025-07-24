@@ -19,8 +19,8 @@ import authRoutes from './api/auth/auth.controller';
 import userRoutes from './api/users';
 import projectRoutes from './api/projects';
 import assessmentRoutes from './api/assessments';
-import contentRoutes from './api/content';
-import analyticsRoutes from './api/analytics';
+// import contentRoutes from './api/content';
+// import analyticsRoutes from './api/analytics';
 import webhookRoutes from './api/webhooks/n8n-endpoints';
 
 // Import utils
@@ -52,7 +52,7 @@ app.use(morgan('combined', { stream: { write: (message) => logger.info(message.t
 app.use('/api', rateLimiter);
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
@@ -61,8 +61,8 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/projects', projectRoutes);
 app.use('/api/v1/assessments', assessmentRoutes);
-app.use('/api/v1/content', contentRoutes);
-app.use('/api/v1/analytics', analyticsRoutes);
+// app.use('/api/v1/content', contentRoutes);
+// app.use('/api/v1/analytics', analyticsRoutes);
 app.use('/api/v1', webhookRoutes);
 
 // Socket.io connection handling
@@ -93,7 +93,7 @@ io.on('connection', (socket) => {
 app.use(errorHandler);
 
 // Start server
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 4000;
 
 httpServer.listen(PORT, () => {
   logger.info(`Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);

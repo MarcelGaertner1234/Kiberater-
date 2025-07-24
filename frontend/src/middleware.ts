@@ -4,8 +4,8 @@ import { getToken } from 'next-auth/jwt'
 
 export async function middleware(request: NextRequest) {
   // Protected paths that require authentication
-  const protectedPaths = ['/dashboard', '/projects', '/assessment', '/admin']
-  const authPaths = ['/auth/login', '/auth/register']
+  const protectedPaths = ['/dashboard', '/projects', '/assessment', '/roadmap', '/chat', '/admin']
+  const authPaths = ['/login', '/register']
   const { pathname } = request.nextUrl
 
   // Check if current path is protected
@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
 
   // Redirect unauthenticated users from protected pages
   if (isProtectedPath && !token) {
-    const loginUrl = new URL('/auth/login', request.url)
+    const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('callbackUrl', pathname)
     return NextResponse.redirect(loginUrl)
   }
@@ -54,9 +54,11 @@ export const config = {
     '/dashboard/:path*',
     '/projects/:path*',
     '/assessment/:path*',
+    '/roadmap/:path*',
+    '/chat/:path*',
     '/admin/:path*',
-    '/auth/login',
-    '/auth/register',
+    '/login',
+    '/register',
     '/api/:path*',
   ],
 }

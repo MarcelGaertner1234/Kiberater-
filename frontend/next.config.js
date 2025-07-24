@@ -12,12 +12,9 @@ const nextConfig = {
       'i.ytimg.com'
     ],
   },
-  experimental: {
-    serverActions: true,
-  },
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000',
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001',
   },
   async headers() {
     return [
@@ -33,18 +30,7 @@ const nextConfig = {
     ];
   },
   async redirects() {
-    return [
-      {
-        source: '/dashboard',
-        destination: '/dashboard/overview',
-        permanent: false,
-      },
-      {
-        source: '/admin',
-        destination: '/admin/overview',
-        permanent: false,
-      },
-    ];
+    return [];
   },
 };
 

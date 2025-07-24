@@ -7,8 +7,8 @@ export function errorHandler(
   err: Error,
   req: Request,
   res: Response,
-  next: NextFunction
-) {
+  _next: NextFunction
+): Response | void {
   // Log error
   logger.error({
     message: err.message,

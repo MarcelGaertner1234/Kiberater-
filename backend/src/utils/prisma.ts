@@ -1,19 +1,42 @@
 import { PrismaClient } from '@prisma/client'
 
-// Create a single instance of PrismaClient
-const globalForPrisma = global as unknown as { prisma: PrismaClient }
+// Singleton pattern for PrismaClient to avoid multiple instances
+const globalForPrisma = global as unknown as { 
+  prisma: PrismaClient | undefined 
+}
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
+const prismaClientSingleton = () => {
+  return new PrismaClient({
     log: process.env.NODE_ENV === 'development' 
-      ? ['query', 'error', 'warn'] 
+      ? ['error', 'warn'] // Reduced logging to avoid prepared statement issues
       : ['error'],
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL,
+      },
+    },
   })
+}
+
+export const prisma = globalForPrisma.prisma ?? prismaClientSingleton()
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma
 }
+
+// Don't call $connect() when using pgbouncer
+// The connection will be established automatically on first use
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  await prisma.$disconnect()
+  process.exit(0)
+})
+
+process.on('SIGTERM', async () => {
+  await prisma.$disconnect()
+  process.exit(0)
+})
 
 // Middleware to soft delete
 prisma.$use(async (params, next) => {
